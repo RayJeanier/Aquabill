@@ -7,7 +7,7 @@ $userCode = $_SESSION["consumer"]["user_code"];
 $account  = get_consumer_account($pdo, $userCode);
 
 $stmt = $pdo->prepare("
-    SELECT amount, cubic_used, payment_method, payment_date
+    SELECT amount, payment_method, payment_date
     FROM payments
     WHERE user_code = :user_code
     ORDER BY payment_date DESC
@@ -37,7 +37,7 @@ include "includes/header.php";
                 <div class="list-row">
                     <div>
                         <?= date("F d, Y", strtotime($p["payment_date"])) ?>
-                        <small><?= htmlspecialchars($p["payment_method"]) ?> · <?= (int) $p["cubic_used"] ?> m³</small>
+                        <small><?= htmlspecialchars($p["payment_method"]) ?></small>
                     </div>
                     <span class="amount">₱<?= number_format($p["amount"], 2) ?></span>
                 </div>

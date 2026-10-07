@@ -40,7 +40,6 @@ $stmt->execute($params);
 $payments = $stmt->fetchAll();
 
 $totalAmount = array_sum(array_column($payments, "amount"));
-$totalCubic  = array_sum(array_column($payments, "cubic_used"));
 ?>
 <!DOCTYPE html>
 <html>
@@ -78,10 +77,6 @@ $totalCubic  = array_sum(array_column($payments, "cubic_used"));
                 <h5>TOTAL COLLECTED</h5>
                 <p>₱<?= number_format($totalAmount, 2) ?></p>
             </div>
-            <div class="stat-card">
-                <h5>TOTAL USAGE</h5>
-                <p><?= number_format($totalCubic) ?> m³</p>
-            </div>
         </div>
 
         <div class="table-container">
@@ -108,7 +103,6 @@ $totalCubic  = array_sum(array_column($payments, "cubic_used"));
                         <th>Date</th>
                         <th>Consumer</th>
                         <th>User Code</th>
-                        <th class="num">Cubic Used</th>
                         <th class="num">Amount</th>
                         <th>Method</th>
                     </tr>
@@ -116,7 +110,7 @@ $totalCubic  = array_sum(array_column($payments, "cubic_used"));
 
                 <tbody>
                 <?php if (!$payments): ?>
-                    <tr><td colspan="6" class="empty">No payments found.</td></tr>
+                    <tr><td colspan="5" class="empty">No payments found.</td></tr>
                 <?php endif; ?>
 
                 <?php foreach ($payments as $p): ?>
@@ -124,7 +118,6 @@ $totalCubic  = array_sum(array_column($payments, "cubic_used"));
                         <td><?= date("M d, Y g:i A", strtotime($p["payment_date"])) ?></td>
                         <td><?= htmlspecialchars($p["consumer_name"]) ?></td>
                         <td><strong><?= htmlspecialchars($p["user_code"]) ?></strong></td>
-                        <td class="num"><?= (int) $p["cubic_used"] ?> m³</td>
                         <td class="num">₱<?= number_format($p["amount"], 2) ?></td>
                         <td><span class="badge <?= strtolower($p["payment_method"]) ?>"><?= htmlspecialchars($p["payment_method"]) ?></span></td>
                     </tr>
@@ -135,7 +128,6 @@ $totalCubic  = array_sum(array_column($payments, "cubic_used"));
                 <tfoot>
                     <tr>
                         <td colspan="3">Total</td>
-                        <td class="num"><?= number_format($totalCubic) ?> m³</td>
                         <td class="num">₱<?= number_format($totalAmount, 2) ?></td>
                         <td></td>
                     </tr>

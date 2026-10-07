@@ -28,25 +28,28 @@ $userCode = $_SESSION["consumer"]["user_code"];
 
 try {
 
-    $stmt = $pdo->prepare("SELECT name FROM consumers WHERE user_code = :user_code");
+    $stmt = $pdo->prepare("SELECT name, address, meter_no FROM consumers WHERE user_code = :user_code");
     $stmt->execute([":user_code" => $userCode]);
-    $name = $stmt->fetchColumn();
+    $consumer = $stmt->fetch();
 
-    if ($name === false) {
+    if (!$consumer) {
         header("Location: ../service.php?error=" . urlencode("Account not found."));
         exit;
     }
 
+    // Address and meter number are saved with the request so the plumber knows where to go
     $stmt = $pdo->prepare("
         INSERT INTO maintenance_requests
-        (user_code, consumer_name, request_type, description, status, created_at)
+        (user_code, consumer_name, address, meter_no, request_type, description, status, created_at)
         VALUES
-        (:user_code, :consumer_name, :request_type, :description, 'Open', NOW())
+        (:user_code, :consumer_name, :address, :meter_no, :request_type, :description, 'Open', NOW())
     ");
 
     $stmt->execute([
         ":user_code"     => $userCode,
-        ":consumer_name" => $name,
+        ":consumer_name" => $consumer["name"],
+        ":address"       => $consumer["address"],
+        ":meter_no"      => $consumer["meter_no"],
         ":request_type"  => $requestType,
         ":description"   => $description,
     ]);

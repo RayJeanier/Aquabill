@@ -1,27 +1,20 @@
 <?php
 require "includes/auth.php";
 require "database/database.php";
-require "includes/billing.php";
+require_once "user/includes/account.php";
 
-$pricing = get_pricing();
-
-/* Consumers with the usage from their latest meter reading (used to prefill the form) */
+/* Active consumers with their unpaid balance (used to prefill the amount) */
 $consumers = $pdo->query("
-    SELECT
-        c.user_code,
-        c.name,
-        r.current_reading - r.previous_reading AS last_usage
-    FROM consumers c
-    LEFT JOIN LATERAL (
-        SELECT previous_reading, current_reading
-        FROM readings
-        WHERE readings.user_code = c.user_code
-        ORDER BY id DESC
-        LIMIT 1
-    ) r ON true
-    WHERE c.status = 'Active'
-    ORDER BY c.name
+    SELECT user_code, name
+    FROM consumers
+    WHERE status = 'Active'
+    ORDER BY name
 ")->fetchAll();
+
+foreach ($consumers as &$c) {
+    $c["balance"] = get_consumer_account($pdo, $c["user_code"])["balance"];
+}
+unset($c);
 
 $payments = $pdo->query("
     SELECT *
@@ -52,7 +45,7 @@ $payments = $pdo->query("
         <div class="header">
             <div>
                 <h1>Encode Payment</h1>
-                <p>Record a consumer's water bill payment.</p>
+                <p>Record a consumer's cash payment.</p>
             </div>
         </div>
 
@@ -79,7 +72,7 @@ $payments = $pdo->query("
                             <?php foreach ($consumers as $c): ?>
                                 <option
                                     value="<?= htmlspecialchars($c["user_code"]) ?>"
-                                    data-usage="<?= $c["last_usage"] !== null ? (int) $c["last_usage"] : "" ?>"
+                                    data-balance="<?= number_format($c["balance"], 2, ".", "") ?>"
                                 >
                                     <?= htmlspecialchars($c["name"]) ?> - <?= htmlspecialchars($c["user_code"]) ?>
                                 </option>
@@ -87,24 +80,16 @@ $payments = $pdo->query("
                         </select>
                     </label>
 
-                    <label>
-                        Cubic Meters Used
-                        <input type="number" name="cubic_used" id="cubic" required min="0" step="1" placeholder="0">
-                        <span class="hint" id="usageHint">Filled in from the consumer's latest meter reading when available.</span>
-                    </label>
-
-                    <label>
-                        Payment Method
-                        <select name="payment_method" required>
-                            <option value="Cash">Cash</option>
-                            <option value="GCash">GCash</option>
-                        </select>
-                    </label>
-
                     <div class="amount-box">
-                        <small>Amount Due</small>
-                        <strong id="amount">₱<?= number_format($pricing["minimum_charge"], 2) ?></strong>
+                        <small>Unpaid Balance</small>
+                        <strong id="balance">₱0.00</strong>
                     </div>
+
+                    <label>
+                        Amount Paid (₱)
+                        <input type="number" name="amount" id="amount" required min="0.01" step="0.01" placeholder="0.00">
+                        <span class="hint" id="amountHint">Payment method: Cash</span>
+                    </label>
 
                     <button type="submit" class="btn">Encode Payment</button>
 
@@ -146,41 +131,40 @@ $payments = $pdo->query("
 
 <script>
 
-const pricing = <?= json_encode($pricing) ?>;
-
 const consumer = document.getElementById("consumer");
-const cubic = document.getElementById("cubic");
+const balance = document.getElementById("balance");
 const amount = document.getElementById("amount");
-const usageHint = document.getElementById("usageHint");
+const amountHint = document.getElementById("amountHint");
 
-function computeBill(used) {
-    const excess = Math.max(0, used - pricing.minimum_cubic);
-    return pricing.minimum_charge + (excess * pricing.excess_rate);
+function peso(value) {
+    return "₱" + value.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function updateAmount() {
-    const used = parseInt(cubic.value) || 0;
-    amount.textContent = "₱" + computeBill(used).toLocaleString("en-PH", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
-}
+function updateHint() {
+    const owed = parseFloat(consumer.selectedOptions[0].dataset.balance || 0);
+    const paid = parseFloat(amount.value) || 0;
 
-consumer.addEventListener("change", () => {
-    const usage = consumer.selectedOptions[0].dataset.usage;
-
-    if (usage !== undefined && usage !== "") {
-        cubic.value = usage;
-        usageHint.textContent = "Usage from latest meter reading: " + usage + " m³";
+    if (!consumer.value || paid <= 0) {
+        amountHint.textContent = "Payment method: Cash";
+    } else if (paid < owed) {
+        amountHint.textContent = "Cash · " + peso(owed - paid) + " will remain unpaid";
+    } else if (paid > owed) {
+        amountHint.textContent = "Cash · " + peso(paid - owed) + " will be kept as advance credit";
     } else {
-        cubic.value = "";
-        usageHint.textContent = consumer.value ? "No meter reading on file - enter usage manually." : "";
+        amountHint.textContent = "Cash · pays the full balance";
     }
+}
 
-    updateAmount();
+// Picking a consumer shows their balance and fills it in as the amount (editable)
+consumer.addEventListener("change", () => {
+    const owed = parseFloat(consumer.selectedOptions[0].dataset.balance || 0);
+
+    balance.textContent = peso(owed);
+    amount.value = owed > 0 ? owed.toFixed(2) : "";
+    updateHint();
 });
 
-cubic.addEventListener("input", updateAmount);
+amount.addEventListener("input", updateHint);
 
 </script>
 

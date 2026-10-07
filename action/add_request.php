@@ -19,7 +19,7 @@ if ($user_code === "" || $request_type === "" || $description === "") {
 
 try {
 
-    $stmt = $pdo->prepare("SELECT name FROM consumers WHERE user_code = :user_code");
+    $stmt = $pdo->prepare("SELECT name, address, meter_no FROM consumers WHERE user_code = :user_code");
     $stmt->execute([":user_code" => $user_code]);
     $consumer = $stmt->fetch();
 
@@ -28,16 +28,19 @@ try {
         exit;
     }
 
+    // Address and meter number are saved with the request so the plumber knows where to go
     $stmt = $pdo->prepare("
         INSERT INTO maintenance_requests
-        (user_code, consumer_name, request_type, description, status, created_at)
+        (user_code, consumer_name, address, meter_no, request_type, description, status, created_at)
         VALUES
-        (:user_code, :consumer_name, :request_type, :description, 'Open', NOW())
+        (:user_code, :consumer_name, :address, :meter_no, :request_type, :description, 'Open', NOW())
     ");
 
     $stmt->execute([
         ":user_code"     => $user_code,
         ":consumer_name" => $consumer["name"],
+        ":address"       => $consumer["address"],
+        ":meter_no"      => $consumer["meter_no"],
         ":request_type"  => $request_type,
         ":description"   => $description,
     ]);

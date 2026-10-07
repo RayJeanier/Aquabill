@@ -88,6 +88,12 @@ foreach ($pdo->query("SELECT status, COUNT(*) AS total FROM maintenance_requests
                         <div>
                             <h3><?= htmlspecialchars($row["request_type"]) ?></h3>
                             <small><?= htmlspecialchars($row["consumer_name"]) ?> · <?= htmlspecialchars($row["user_code"]) ?></small>
+                            <?php if (!empty($row["address"]) || !empty($row["meter_no"])): ?>
+                                <br><small>📍 <?= htmlspecialchars(implode(" · ", array_filter([
+                                    $row["address"] ?? "",
+                                    !empty($row["meter_no"]) ? "Meter no. " . $row["meter_no"] : "",
+                                ]))) ?></small>
+                            <?php endif; ?>
                         </div>
 
                         <span class="badge <?= strtolower(str_replace(" ", "-", $row["status"])) ?>">

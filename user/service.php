@@ -13,6 +13,11 @@ $stmt = $pdo->prepare("
 $stmt->execute([":user_code" => $userCode]);
 $requests = $stmt->fetchAll();
 
+// Sent with each request (see action/add_request.php)
+$stmt = $pdo->prepare("SELECT address, meter_no FROM consumers WHERE user_code = :user_code");
+$stmt->execute([":user_code" => $userCode]);
+$location = $stmt->fetch() ?: ["address" => null, "meter_no" => null];
+
 // Keep in sync with action/add_request.php
 $requestTypes = [
     "Leak Report",
@@ -51,6 +56,14 @@ include "includes/header.php";
             <h2 class="section-title" id="formTitle">New request</h2>
 
             <form class="form" method="POST" action="action/add_request.php">
+
+                <div class="field">
+                    <span>Service location</span>
+                    <p class="note" style="margin-top:0">
+                        📍 <?= htmlspecialchars($location["address"] ?: "No address on file") ?>
+                        · Meter no. <?= htmlspecialchars($location["meter_no"] ?: "—") ?>
+                    </p>
+                </div>
 
                 <fieldset class="field">
                     <legend class="sr-only">What's the problem?</legend>

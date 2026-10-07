@@ -17,6 +17,7 @@ $menuItems = [
     "payment-records.php" => "Payment Records",
     "maintenance.php"     => "Maintenance",
     "meter-readings.php"  => "Meter Readings",
+    "staff.php"           => "Staff",
 ];
 ?>
 <div class="sidebar">
