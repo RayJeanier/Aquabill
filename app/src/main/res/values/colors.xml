@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Consumer home -->
+    <color name="aqua_navy">#1E5878</color>
+    <color name="aqua_blue">#3497CF</color>
+    <color name="aqua_bg">#F2F6F9</color>
+    <color name="text_primary">#13293D</color>
+    <color name="text_secondary">#6B7C8C</color>
+    <color name="divider">#E6ECF1</color>
+    <color name="success_green">#2E9E6A</color>
+    <color name="warning_orange">#E38A1A</color>
+    <color name="warning_orange_bg">#FFF0DA</color>
+    <color name="tile_pay_bg">#E7EDF2</color>
+    <color name="tile_bills_bg">#DDF1F6</color>
+    <color name="tile_repair_bg">#FDEBD5</color>
+    <color name="success_green_bg">#DDF2E8</color>
+    <color name="tile_bills_icon">#2B7A93</color>
+    <color name="danger_red">#D64545</color>
+    <color name="danger_red_bg">#FDE4E4</color>
+    <color name="field_bg">#F5F8FA</color>
+    <color name="field_stroke">#DDE6EC</color>
+</resources>

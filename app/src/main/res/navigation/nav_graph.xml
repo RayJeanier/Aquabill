@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/logInFragment">
+
+    <fragment
+        android:id="@+id/logInFragment"
+        android:name="com.example.aquabill.LogInFragment"
+        android:label="Login" >
+
+        <action
+            android:id="@+id/action_logInFragment_to_readerHomeFragment"
+            app:destination="@id/readerHomeFragment" />
+        <action
+            android:id="@+id/action_logInFragment_to_userHomeFragment"
+            app:destination="@id/userHomeFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/readerHomeFragment"
+        android:name="com.example.aquabill.ReaderHomeFragment"
+        android:label="fragment_reader_home"
+        tools:layout="@layout/fragment_reader_home" />
+    <fragment
+        android:id="@+id/userHomeFragment"
+        android:name="com.example.aquabill.UserHomeFragment"
+        android:label="fragment_user_home"
+        tools:layout="@layout/fragment_user_home" >
+
+        <action
+            android:id="@+id/action_userHomeFragment_to_billsFragment"
+            app:destination="@id/billsFragment" />
+        <action
+            android:id="@+id/action_userHomeFragment_to_maintenanceFragment"
+            app:destination="@id/maintenanceFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/billsFragment"
+        android:name="com.example.aquabill.BillsFragment"
+        android:label="Bills"
+        tools:layout="@layout/fragment_bills" />
+
+    <fragment
+        android:id="@+id/maintenanceFragment"
+        android:name="com.example.aquabill.MaintenanceFragment"
+        android:label="Repair"
+        tools:layout="@layout/fragment_maintenance" />
+
+</navigation>
