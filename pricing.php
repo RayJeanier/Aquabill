@@ -63,6 +63,12 @@ $sampleUsages = [5, 10, 15, 20, 30, 50];
                         <input type="number" name="excess_rate" min="0" step="0.01" required value="<?= htmlspecialchars($pricing["excess_rate"]) ?>">
                     </label>
 
+                    <label>
+                        Days Until Bill Is Due
+                        <input type="number" name="due_days" min="1" step="1" required value="<?= htmlspecialchars($pricing["due_days"]) ?>">
+                        <span class="hint">Counted from the meter reading date. Shown to consumers on their bills.</span>
+                    </label>
+
                     <button type="submit" class="btn">Save Rates</button>
 
                 </form>

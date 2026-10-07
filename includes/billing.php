@@ -2,6 +2,7 @@
 
 // Water rates live in config/pricing.json and are edited from pricing.php.
 // Bill = minimum charge for the first N cubic meters, plus excess rate per cubic meter above N.
+// A bill is due "due_days" days after its meter reading.
 
 const PRICING_FILE = __DIR__ . "/../config/pricing.json";
 
@@ -9,6 +10,7 @@ const DEFAULT_PRICING = [
     "minimum_charge" => 120,
     "minimum_cubic"  => 10,
     "excess_rate"    => 8,
+    "due_days"       => 15,
 ];
 
 function get_pricing(): array

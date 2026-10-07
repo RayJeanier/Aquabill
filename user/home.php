@@ -1,175 +1,209 @@
 <?php
 require "includes/auth.php";
 require "../database/database.php";
-require "../includes/billing.php";
+require_once "includes/account.php";
 
 $userCode = $_SESSION["consumer"]["user_code"];
-
-$stmt = $pdo->prepare("SELECT name, address, meter_no FROM consumers WHERE user_code = :user_code");
-$stmt->execute([":user_code" => $userCode]);
-$consumer = $stmt->fetch();
-
-// Consumer was deleted while logged in
-if (!$consumer) {
-    unset($_SESSION["consumer"]);
-    header("Location: ../index.html");
-    exit;
-}
+$account  = get_consumer_account($pdo, $userCode);
+$current  = $account["current"];
+$previous = $account["previous"];
 
 $stmt = $pdo->prepare("
-    SELECT previous_reading, current_reading, reading_date
-    FROM readings
-    WHERE user_code = :user_code
-    ORDER BY id DESC
-    LIMIT 1
-");
-$stmt->execute([":user_code" => $userCode]);
-$latestReading = $stmt->fetch();
-
-$stmt = $pdo->prepare("
-    SELECT amount, cubic_used, payment_method, payment_date
+    SELECT amount, payment_method, payment_date
     FROM payments
     WHERE user_code = :user_code
     ORDER BY payment_date DESC
-    LIMIT 5
+    LIMIT 3
 ");
 $stmt->execute([":user_code" => $userCode]);
-$payments = $stmt->fetchAll();
+$recentPayments = $stmt->fetchAll();
 
-$stmt = $pdo->prepare("
-    SELECT request_type, status, created_at
-    FROM maintenance_requests
-    WHERE user_code = :user_code
-    ORDER BY created_at DESC
-    LIMIT 5
-");
-$stmt->execute([":user_code" => $userCode]);
-$requests = $stmt->fetchAll();
+/* Greeting in Philippine time */
+$hour     = (int) (new DateTime("now", new DateTimeZone("Asia/Manila")))->format("G");
+$greeting = $hour < 12 ? "Good morning," : ($hour < 18 ? "Good afternoon," : "Good evening,");
 
-$usage = $latestReading ? max(0, $latestReading["current_reading"] - $latestReading["previous_reading"]) : null;
-$bill  = $usage !== null ? compute_bill($usage) : null;
+/* Usage compared with the previous bill */
+$trend = null;
 
-$firstName = explode(" ", trim($consumer["name"]))[0];
+if ($current && $previous && $previous["usage"] > 0) {
+    $change = ($current["usage"] - $previous["usage"]) / $previous["usage"] * 100;
 
-// 12.50 -> "12.5", 300.00 -> "300"
-function format_reading(string|float $value): string
-{
-    return rtrim(rtrim(number_format((float) $value, 2), "0"), ".");
+    if (abs($change) < 0.5) {
+        $trend = ["class" => "neutral", "text" => "Same usage as last bill", "icon" => '<path d="M5 12h14"/>'];
+    } elseif ($change < 0) {
+        $trend = ["class" => "good", "text" => round(abs($change)) . "% lower than last bill", "icon" => '<path d="m3 7 6 6 4-4 8 8"/><path d="M21 11v6h-6"/>'];
+    } else {
+        $trend = ["class" => "warning", "text" => round($change) . "% higher than last bill", "icon" => '<path d="m3 17 6-6 4 4 8-8"/><path d="M21 13V7h-6"/>'];
+    }
 }
 
-$pageTitle    = "My Account";
-$pageHeading  = "Welcome back, " . $firstName;
-$pageSubtitle = "Here's an overview of your water account";
+/* Consumption chart: last 6 bills, oldest to newest */
+$chartBills = array_reverse(array_slice($account["bills"], 0, 6));
+$chartMax   = max(array_merge([0], array_column($chartBills, "usage")));
+
+// Round the axis up to a clean number (10, 20, 50, 100, 200, 500 ...)
+$axisMax = 10;
+while ($axisMax < $chartMax) {
+    $axisMax *= in_array(substr((string) $axisMax, 0, 1), ["1", "5"]) ? 2 : 2.5;
+}
+
+$amountParts = $current ? explode(".", number_format($current["amount"], 2)) : ["0", "00"];
+
+$pageTitle   = "Home";
+$pageEyebrow = $greeting;
+$pageHeading = $_SESSION["consumer"]["name"];
 
 include "includes/header.php";
 ?>
 
-<span class="account-chip mobile-only"><?= htmlspecialchars($userCode) ?></span>
+<div class="home-grid">
 
-<div class="content-grid">
+    <!-- CURRENT BILL -->
+    <section class="card area-bill" aria-label="Current bill">
 
-    <!-- MAIN COLUMN -->
-    <div class="content-col">
-
-        <!-- LATEST BILL -->
-        <section class="bill-card">
-            <small>Latest bill</small>
-
-            <?php if ($bill === null): ?>
-                <p class="bill-amount">—</p>
-                <p class="bill-note">No meter reading on file yet.</p>
-            <?php else: ?>
-                <p class="bill-amount">₱<?= number_format($bill, 2) ?></p>
-
-                <div class="bill-stats">
-                    <div>
-                        <span>Usage</span>
-                        <strong><?= format_reading($usage) ?> m³</strong>
-                    </div>
-                    <div>
-                        <span>Reading</span>
-                        <strong><?= format_reading($latestReading["current_reading"]) ?></strong>
-                    </div>
-                    <div>
-                        <span>Read on</span>
-                        <strong><?= date("M d", strtotime($latestReading["reading_date"])) ?></strong>
-                    </div>
+        <div class="bill-top">
+            <div class="bill-id">
+                <span class="drop-tile"><?= $dropIcon ?></span>
+                <div>
+                    <small>Current bill</small>
+                    <strong><?= $current ? $current["period"] : "No bill yet" ?></strong>
                 </div>
+            </div>
+
+            <?php if ($current): ?>
+                <span class="pill <?= status_class($current["status"]) ?>"><?= due_label($current) ?></span>
             <?php endif; ?>
-        </section>
+        </div>
 
-        <!-- PAYMENT HISTORY -->
-        <section class="panel">
-            <h2 class="panel-title">Payment history</h2>
+        <?php if (!$current): ?>
+            <p class="bill-empty">Your first bill will appear here after your meter is read.</p>
+        <?php else: ?>
 
-            <div class="list-box">
-                <?php if (!$payments): ?>
-                    <p class="empty-text">No payments recorded yet.</p>
-                <?php endif; ?>
+            <p class="bill-amount">₱<?= $amountParts[0] ?><span class="cents">.<?= $amountParts[1] ?></span></p>
 
-                <?php foreach ($payments as $p): ?>
-                    <div class="list-row">
-                        <div>
-                            <?= date("F d, Y", strtotime($p["payment_date"])) ?>
-                            <small><?= htmlspecialchars($p["payment_method"]) ?> · <?= (int) $p["cubic_used"] ?> m³</small>
+            <?php if ($trend): ?>
+                <p class="trend <?= $trend["class"] ?>">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><?= $trend["icon"] ?></svg>
+                    <?= $trend["text"] ?>
+                </p>
+            <?php endif; ?>
+
+            <div class="bill-stats">
+                <div>
+                    <span class="stat-label">Usage</span>
+                    <span class="stat-value"><?= format_number($current["usage"]) ?> m³</span>
+                </div>
+                <div>
+                    <span class="stat-label">Reading</span>
+                    <span class="stat-value"><?= $current["read_on"]->format("M d") ?></span>
+                </div>
+                <div>
+                    <span class="stat-label">Due</span>
+                    <span class="stat-value"><?= $current["due_on"]->format("M d") ?></span>
+                </div>
+            </div>
+
+            <?php if ($account["balance"] > $current["unpaid"]): ?>
+                <p class="note">Total unpaid balance including earlier bills: <strong>₱<?= number_format($account["balance"], 2) ?></strong></p>
+            <?php elseif ($account["balance"] <= 0): ?>
+                <p class="note">You're all paid up. Thank you!</p>
+            <?php endif; ?>
+
+            <a href="bills.php" class="btn-primary">
+                View Bills
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+
+        <?php endif; ?>
+    </section>
+
+    <!-- QUICK ACTIONS -->
+    <section class="area-actions" aria-labelledby="quickActionsTitle">
+        <h2 class="section-title" id="quickActionsTitle">Quick actions</h2>
+
+        <div class="quick-actions">
+            <a href="bills.php" class="action-tile">
+                <span class="action-icon bills"><?= nav_icon("bill") ?></span>
+                Bills
+            </a>
+            <a href="service.php" class="action-tile">
+                <span class="action-icon repair"><?= nav_icon("wrench") ?></span>
+                Repair
+            </a>
+        </div>
+    </section>
+
+    <!-- CONSUMPTION -->
+    <section class="card area-chart" aria-labelledby="consumptionTitle">
+        <div class="card-head">
+            <div>
+                <h2 class="section-title" id="consumptionTitle">Consumption</h2>
+                <p class="card-sub">Last <?= max(1, count($chartBills)) ?> bill<?= count($chartBills) === 1 ? "" : "s" ?></p>
+            </div>
+            <span class="chip">m³</span>
+        </div>
+
+        <?php if (!$chartBills): ?>
+            <p class="chart-empty">No meter readings yet.</p>
+        <?php else: ?>
+            <div class="chart" aria-hidden="true">
+                <div class="chart-grid">
+                    <span style="top:0" data-label="<?= format_number($axisMax) ?>"></span>
+                    <span style="top:50%" data-label="<?= format_number($axisMax / 2) ?>"></span>
+                    <span style="top:100%" data-label="0"></span>
+                </div>
+
+                <div class="chart-cols">
+                    <?php foreach ($chartBills as $i => $b): ?>
+                        <?php $isLatest = $i === count($chartBills) - 1; ?>
+                        <div class="chart-col <?= $isLatest ? 'latest' : '' ?>" tabindex="0" style="--h:<?= round($b["usage"] / $axisMax * 100, 2) ?>%">
+                            <div class="bar-area">
+                                <div class="bar" style="height:var(--h)"></div>
+                                <?php if ($isLatest): ?>
+                                    <span class="bar-value"><?= format_number($b["usage"]) ?></span>
+                                <?php endif; ?>
+                                <span class="chart-tip">
+                                    <strong><?= $b["period"] ?></strong>
+                                    <?= format_number($b["usage"]) ?> m³ · ₱<?= number_format($b["amount"], 2) ?>
+                                </span>
+                            </div>
+                            <span class="bar-label"><?= $b["month"] ?></span>
                         </div>
-                        <span class="amount">₱<?= number_format($p["amount"], 2) ?></span>
-                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+            <!-- Same data as a table for screen readers -->
+            <table class="sr-only">
+                <caption>Water consumption per bill</caption>
+                <tr><th>Bill</th><th>Usage (m³)</th><th>Amount</th></tr>
+                <?php foreach ($chartBills as $b): ?>
+                    <tr><td><?= $b["period"] ?></td><td><?= format_number($b["usage"]) ?></td><td>₱<?= number_format($b["amount"], 2) ?></td></tr>
                 <?php endforeach; ?>
+            </table>
+        <?php endif; ?>
+    </section>
+
+    <!-- RECENT PAYMENTS -->
+    <section class="card area-recent" aria-labelledby="recentTitle">
+        <h2 class="section-title" id="recentTitle">Recent payments</h2>
+
+        <?php if (!$recentPayments): ?>
+            <p class="empty-text">No payments yet.</p>
+        <?php endif; ?>
+
+        <?php foreach ($recentPayments as $p): ?>
+            <div class="list-row">
+                <div>
+                    <?= date("M d, Y", strtotime($p["payment_date"])) ?>
+                    <small><?= htmlspecialchars($p["payment_method"]) ?></small>
+                </div>
+                <span class="amount">₱<?= number_format($p["amount"], 2) ?></span>
             </div>
-        </section>
+        <?php endforeach; ?>
 
-    </div>
-
-    <!-- SIDE COLUMN -->
-    <div class="content-col">
-
-        <!-- MAINTENANCE -->
-        <section class="panel">
-            <h2 class="panel-title">Maintenance requests</h2>
-
-            <div class="list-box">
-                <?php if (!$requests): ?>
-                    <p class="empty-text">No maintenance requests.</p>
-                <?php endif; ?>
-
-                <?php foreach ($requests as $r): ?>
-                    <div class="list-row">
-                        <div>
-                            <?= htmlspecialchars($r["request_type"]) ?>
-                            <small><?= date("F d, Y", strtotime($r["created_at"])) ?></small>
-                        </div>
-                        <span class="pill <?= strtolower(str_replace(" ", "-", $r["status"])) ?>"><?= htmlspecialchars($r["status"]) ?></span>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </section>
-
-        <!-- ACCOUNT -->
-        <section class="panel">
-            <h2 class="panel-title">Account details</h2>
-
-            <div class="list-box">
-                <div class="list-row">
-                    <span class="label">Name</span>
-                    <strong><?= htmlspecialchars($consumer["name"]) ?></strong>
-                </div>
-                <div class="list-row">
-                    <span class="label">Account No.</span>
-                    <strong><?= htmlspecialchars($userCode) ?></strong>
-                </div>
-                <div class="list-row">
-                    <span class="label">Address</span>
-                    <strong><?= htmlspecialchars($consumer["address"]) ?></strong>
-                </div>
-                <div class="list-row">
-                    <span class="label">Meter No.</span>
-                    <strong><?= htmlspecialchars($consumer["meter_no"]) ?></strong>
-                </div>
-            </div>
-        </section>
-
-    </div>
+        <a href="history.php" class="link-more">View all payments →</a>
+    </section>
 
 </div>
 
