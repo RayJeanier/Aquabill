@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -39,7 +38,8 @@ class MainActivity : AppCompatActivity() {
         mapOf(
             R.id.navHome to R.id.userHomeFragment,
             R.id.navBills to R.id.billsFragment,
-            R.id.navService to R.id.maintenanceFragment
+            R.id.navService to R.id.maintenanceFragment,
+            R.id.navHistory to R.id.historyFragment
         )
     }
 
@@ -53,9 +53,6 @@ class MainActivity : AppCompatActivity() {
 
         tabs.forEach { (tabId, destinationId) ->
             findViewById<View>(tabId).setOnClickListener { openTab(destinationId) }
-        }
-        findViewById<View>(R.id.navHistory).setOnClickListener {
-            Toast.makeText(this, "Coming soon", Toast.LENGTH_SHORT).show()
         }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -76,7 +73,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun openTab(destinationId: Int) {
+    // Opens a bottom-nav destination; also used by in-page links like History's "View bills"
+    fun openTab(destinationId: Int) {
         if (navController.currentDestination?.id == destinationId) return
         if (destinationId == R.id.userHomeFragment) {
             navController.popBackStack(R.id.userHomeFragment, false)

@@ -46,6 +46,12 @@
         tools:layout="@layout/fragment_bills" />
 
     <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.example.aquabill.HistoryFragment"
+        android:label="History"
+        tools:layout="@layout/fragment_history" />
+
+    <fragment
         android:id="@+id/maintenanceFragment"
         android:name="com.example.aquabill.MaintenanceFragment"
         android:label="Repair"

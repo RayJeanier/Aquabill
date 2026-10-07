@@ -1,7 +1,5 @@
 package com.example.aquabill
 
-import io.github.jan.supabase.postgrest.from
-import io.github.jan.supabase.postgrest.query.Order
 import java.util.Calendar
 import java.util.Date
 import java.util.concurrent.TimeUnit
@@ -59,23 +57,8 @@ data class Bill(
 
     companion object {
         // Loads a consumer's bills (oldest first) from the readings and payments tables
-        suspend fun load(userCode: String): List<Bill> {
-            val readings = supabase
-                .from("readings")
-                .select {
-                    filter { eq("user_code", userCode) }
-                    order("reading_date", Order.ASCENDING)
-                    order("id", Order.ASCENDING)
-                }
-                .decodeList<Reading>()
-
-            val payments = supabase
-                .from("payments")
-                .select { filter { eq("user_code", userCode) } }
-                .decodeList<Payment>()
-
-            return fromHistory(readings, payments.sumOf { it.amount ?: 0.0 })
-        }
+        suspend fun load(userCode: String): List<Bill> =
+            fromHistory(Reading.load(userCode), Payment.load(userCode).sumOf { it.amount ?: 0.0 })
 
         // Every payment is applied to the oldest bill first
         fun fromHistory(readingsOldestFirst: List<Reading>, totalPaid: Double): List<Bill> {
