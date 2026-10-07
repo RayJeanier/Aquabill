@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_logInFragment_to_userHomeFragment"
             app:destination="@id/userHomeFragment" />
+        <action
+            android:id="@+id/action_logInFragment_to_plumberHomeFragment"
+            app:destination="@id/plumberHomeFragment" />
 
     </fragment>
 
@@ -44,6 +47,12 @@
         android:name="com.example.aquabill.BillsFragment"
         android:label="Bills"
         tools:layout="@layout/fragment_bills" />
+
+    <fragment
+        android:id="@+id/plumberHomeFragment"
+        android:name="com.example.aquabill.PlumberHomeFragment"
+        android:label="Plumber"
+        tools:layout="@layout/fragment_plumber_home" />
 
     <fragment
         android:id="@+id/historyFragment"

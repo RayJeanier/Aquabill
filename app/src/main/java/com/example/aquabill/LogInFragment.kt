@@ -104,6 +104,11 @@ class LogInFragment : Fragment(R.layout.fragment_log_in) {
                             bundle
                         )
 
+                        "plumber" -> findNavController().navigate(
+                            R.id.action_logInFragment_to_plumberHomeFragment,
+                            bundle
+                        )
+
                         else -> Toast.makeText(
                             requireContext(),
                             "Unknown role: $role",

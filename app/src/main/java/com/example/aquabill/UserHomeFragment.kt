@@ -13,11 +13,8 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navOptions
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
-import java.util.Calendar
 
 class UserHomeFragment : Fragment(R.layout.fragment_user_home) {
 
@@ -133,29 +130,6 @@ class UserHomeFragment : Fragment(R.layout.fragment_user_home) {
         )
         chart.isVisible = recentBills.isNotEmpty()
         view.findViewById<View>(R.id.tvChartEmpty).isVisible = recentBills.isEmpty()
-    }
-
-    private fun confirmLogout() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Log out")
-            .setMessage("Are you sure you want to log out?")
-            .setNegativeButton("Cancel", null)
-            .setPositiveButton("Log out") { _, _ ->
-                // Clear the back stack so Back can't return to the home screen
-                findNavController().navigate(R.id.logInFragment, null, navOptions {
-                    popUpTo(R.id.nav_graph) { inclusive = true }
-                })
-            }
-            .show()
-    }
-
-    private fun greetingForNow(): String {
-        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-        return when {
-            hour < 12 -> "Good morning"
-            hour < 18 -> "Good afternoon"
-            else -> "Good evening"
-        }
     }
 
     // Keep the header clear of the status bar

@@ -71,18 +71,17 @@ class MaintenanceFragment : Fragment(R.layout.fragment_maintenance) {
             btnSubmit.isEnabled = false
             viewLifecycleOwner.lifecycleScope.launch {
                 try {
-                    val consumerName = supabase
-                        .from("consumers")
-                        .select { filter { eq("user_code", userCode) } }
-                        .decodeList<Consumer>()
-                        .firstOrNull()
-                        ?.name
-                        ?: throw IllegalStateException("Account not found")
+                    // Fetched fresh so the request carries the consumer's current details
+                    val consumer = Consumer.load(userCode)
+                    val consumerName = consumer?.name ?: throw IllegalStateException("Account not found")
+                    showServiceLocation(consumer)
 
                     supabase.from("maintenance_requests").insert(
                         NewMaintenanceRequest(
                             user_code = userCode,
                             consumer_name = consumerName,
+                            address = consumer.address,
+                            meter_no = consumer.meter_no,
                             request_type = type,
                             description = description,
                             status = "Open"
@@ -104,10 +103,33 @@ class MaintenanceFragment : Fragment(R.layout.fragment_maintenance) {
         swipeRefresh = view.findViewById(R.id.swipeRefresh)
         swipeRefresh.setColorSchemeResources(R.color.aqua_navy)
         swipeRefresh.setOnRefreshListener {
-            viewLifecycleOwner.lifecycleScope.launch { loadRequests() }
+            viewLifecycleOwner.lifecycleScope.launch {
+                loadServiceLocation()
+                loadRequests()
+            }
         }
 
-        viewLifecycleOwner.lifecycleScope.launch { loadRequests() }
+        viewLifecycleOwner.lifecycleScope.launch {
+            loadServiceLocation()
+            loadRequests()
+        }
+    }
+
+    private suspend fun loadServiceLocation() {
+        try {
+            showServiceLocation(Consumer.load(userCode))
+        } catch (e: Exception) {
+            requireView().findViewById<TextView>(R.id.tvServiceAddress).text = "Couldn't load your address"
+        }
+    }
+
+    // Shows the address and meter number that will be sent with the request
+    private fun showServiceLocation(consumer: Consumer?) {
+        val root = requireView()
+        root.findViewById<TextView>(R.id.tvServiceAddress).text =
+            consumer?.address?.takeIf { it.isNotBlank() } ?: "No address on file"
+        root.findViewById<TextView>(R.id.tvMeterNo).text =
+            "Meter no. ${consumer?.meter_no?.takeIf { it.isNotBlank() } ?: "—"}"
     }
 
     private suspend fun loadRequests() {
@@ -140,20 +162,9 @@ class MaintenanceFragment : Fragment(R.layout.fragment_maintenance) {
             item.findViewById<TextView>(R.id.tvRequestDate).text =
                 formatDate(request.created_at, "MMM d, yyyy")
             item.findViewById<TextView>(R.id.tvRequestDescription).text = request.description.orEmpty()
-            showRequestStatus(item.findViewById(R.id.tvRequestStatus), request.status)
+            item.findViewById<TextView>(R.id.tvRequestStatus).showRequestStatus(request.status)
             requestList.addView(item)
         }
         tvEmpty.isVisible = requests.isEmpty()
-    }
-
-    // Statuses set by the admin web app: Open, In Progress, Resolved (same colors as the web)
-    private fun showRequestStatus(badge: TextView, status: String?) {
-        val label = status ?: "Open"
-        when (label) {
-            "Open" -> badge.showStatusBadge(label, R.color.danger_red, R.color.danger_red_bg)
-            "In Progress" -> badge.showStatusBadge(label, R.color.warning_orange, R.color.warning_orange_bg)
-            "Resolved" -> badge.showStatusBadge(label, R.color.success_green, R.color.success_green_bg)
-            else -> badge.showStatusBadge(label, R.color.text_secondary, R.color.divider)
-        }
     }
 }
