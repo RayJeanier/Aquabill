@@ -1,0 +1,587 @@
+/* Consumer-side styles.
+   Phone (default): app look - gradient hero + white sheet.
+   Computer (900px+): website look - top bar, gradient header band, card grid. */
+
+:root{
+    --sky-top:#c4e8f4;
+    --sky-bottom:#9fd2e8;
+    --navy:#13283c;
+    --text:#2b3f52;
+    --muted:#6b7f91;
+    --brand:#2a5f85;
+    --brand-light:#2d9bd6;
+    --soft-bg:#f5f8fa;
+    --soft-border:#e4ebf0;
+    --page-bg:#f2f7fa;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    -webkit-text-size-adjust:100%;
+}
+
+body{
+    font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+    color:var(--text);
+    background:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-bottom) 100%);
+    min-height:100vh;
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+}
+
+a{
+    color:inherit;
+}
+
+svg{
+    flex-shrink:0;
+}
+
+/* ===================== SHARED BITS ===================== */
+
+.icon-btn{
+    width:44px;
+    height:44px;
+    border-radius:14px;
+    background:rgba(255,255,255,0.55);
+    display:grid;
+    place-items:center;
+    color:var(--brand);
+    transition:background .2s;
+}
+
+.icon-btn:hover{
+    background:rgba(255,255,255,0.9);
+}
+
+.icon-btn svg{
+    width:22px;
+    height:22px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+/* ===================== TOP BAR (computer only) ===================== */
+
+.topbar{
+    display:none;
+}
+
+/* ===================== HERO (phone) ===================== */
+
+.hero{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:40px 24px 44px;
+    text-align:center;
+}
+
+.hero-logout{
+    position:absolute;
+    top:16px;
+    right:16px;
+}
+
+.logo-wrap{
+    width:132px;
+    height:132px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    background:radial-gradient(circle,rgba(255,255,255,0.55) 0%,rgba(255,255,255,0.18) 55%,rgba(255,255,255,0) 72%);
+}
+
+.logo-tile{
+    width:80px;
+    height:80px;
+    border-radius:22px;
+    background:#fff;
+    display:grid;
+    place-items:center;
+    box-shadow:0 12px 30px rgba(42,95,133,0.18);
+}
+
+.logo-tile svg{
+    width:34px;
+    height:34px;
+    fill:#2f6b8f;
+}
+
+.app-name{
+    font-size:32px;
+    font-weight:800;
+    color:#fff;
+    letter-spacing:-0.01em;
+    text-shadow:0 2px 12px rgba(42,95,133,0.25);
+}
+
+.tagline{
+    margin-top:4px;
+    font-size:15px;
+    color:rgba(255,255,255,0.92);
+    font-weight:500;
+}
+
+/* ===================== SHEET (page content) ===================== */
+
+.sheet{
+    flex:1;
+    background:#fff;
+    border-radius:32px 32px 0 0;
+    padding:16px 20px calc(32px + env(safe-area-inset-bottom));
+    box-shadow:0 -10px 40px rgba(42,95,133,0.12);
+}
+
+.has-tabbar .sheet{
+    padding-bottom:calc(100px + env(safe-area-inset-bottom));
+}
+
+.sheet-handle{
+    width:56px;
+    height:6px;
+    border-radius:3px;
+    background:#e3e9ee;
+    margin:0 auto 26px;
+}
+
+.page-head h1{
+    font-size:28px;
+    font-weight:800;
+    color:var(--navy);
+    letter-spacing:-0.01em;
+}
+
+.page-subtitle{
+    margin-top:4px;
+    color:var(--muted);
+    font-size:15px;
+}
+
+.account-chip{
+    display:inline-block;
+    margin-top:12px;
+    padding:6px 12px;
+    background:var(--soft-bg);
+    border:1px solid var(--soft-border);
+    border-radius:999px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--brand);
+}
+
+/* Page content grid: one column on phone */
+.content-grid{
+    display:flex;
+    flex-direction:column;
+    gap:28px;
+    margin-top:24px;
+}
+
+.content-col{
+    display:flex;
+    flex-direction:column;
+    gap:28px;
+}
+
+/* A titled block of content. Plain on phone, a white card on computer. */
+.panel-title{
+    font-size:14px;
+    font-weight:600;
+    color:#4a5e70;
+    margin-bottom:10px;
+}
+
+/* BILL CARD */
+.bill-card{
+    border-radius:20px;
+    padding:22px 20px;
+    color:#fff;
+    background:linear-gradient(120deg,var(--brand) 0%,var(--brand-light) 100%);
+    box-shadow:0 12px 28px rgba(45,155,214,0.28);
+}
+
+.bill-card small{
+    font-size:14px;
+    font-weight:500;
+    opacity:0.85;
+}
+
+.bill-amount{
+    font-size:38px;
+    font-weight:800;
+    letter-spacing:-0.02em;
+    margin-top:2px;
+    font-variant-numeric:tabular-nums;
+}
+
+.bill-note{
+    margin-top:6px;
+    font-size:14px;
+    opacity:0.9;
+}
+
+.bill-stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    margin-top:16px;
+}
+
+.bill-stats div{
+    background:rgba(255,255,255,0.16);
+    border-radius:12px;
+    padding:10px 12px;
+}
+
+.bill-stats span{
+    display:block;
+    font-size:12px;
+    opacity:0.85;
+}
+
+.bill-stats strong{
+    display:block;
+    margin-top:2px;
+    font-size:15px;
+    font-variant-numeric:tabular-nums;
+}
+
+/* LIST BOX */
+.list-box{
+    background:var(--soft-bg);
+    border:1px solid var(--soft-border);
+    border-radius:16px;
+    padding:4px 16px;
+}
+
+.list-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    padding:14px 0;
+    border-bottom:1px solid var(--soft-border);
+    font-size:15px;
+    color:var(--navy);
+}
+
+.list-row:last-child{
+    border-bottom:none;
+}
+
+.list-row small{
+    display:block;
+    color:var(--muted);
+    font-size:13px;
+    margin-top:2px;
+}
+
+.list-row .label{
+    color:var(--muted);
+    font-size:14px;
+}
+
+.list-row strong{
+    text-align:right;
+    font-weight:600;
+}
+
+.list-row .amount{
+    font-weight:700;
+    white-space:nowrap;
+    font-variant-numeric:tabular-nums;
+}
+
+.empty-text{
+    color:var(--muted);
+    font-size:14px;
+    padding:14px 0;
+}
+
+.pill{
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:600;
+    white-space:nowrap;
+}
+
+.pill.open{ background:#fdecec; color:#b42318; }
+.pill.in-progress{ background:#fff4db; color:#93600a; }
+.pill.resolved{ background:#e3f6ec; color:#18794e; }
+
+/* LOGOUT BUTTON (phone) */
+.btn-outline{
+    display:block;
+    margin-top:32px;
+    height:56px;
+    line-height:54px;
+    text-align:center;
+    border:1.5px solid var(--soft-border);
+    border-radius:14px;
+    color:var(--brand);
+    font-size:16px;
+    font-weight:700;
+    text-decoration:none;
+    transition:background .2s, border-color .2s;
+}
+
+.btn-outline:hover{
+    background:var(--soft-bg);
+    border-color:#cfdbe4;
+}
+
+/* BOTTOM TAB BAR (phone, when there are 2+ pages) */
+.tabbar{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    display:flex;
+    background:rgba(255,255,255,0.96);
+    backdrop-filter:blur(10px);
+    border-top:1px solid var(--soft-border);
+    padding:8px 8px calc(8px + env(safe-area-inset-bottom));
+    z-index:10;
+}
+
+.tabbar a{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    padding:6px 0;
+    border-radius:12px;
+    font-size:12px;
+    font-weight:600;
+    color:var(--muted);
+    text-decoration:none;
+}
+
+.tabbar a.active{
+    color:var(--brand);
+}
+
+.tabbar svg{
+    width:24px;
+    height:24px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:1.8;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+/* ===================== COMPUTER LAYOUT ===================== */
+
+@media (min-width:900px){
+
+    body{
+        background:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-bottom) 100%) fixed;
+    }
+
+    .hero,
+    .sheet-handle,
+    .mobile-only,
+    .tabbar{
+        display:none;
+    }
+
+    .has-tabbar .sheet{
+        padding-bottom:56px;
+    }
+
+    /* Top bar */
+    .topbar{
+        display:block;
+        padding:18px 32px;
+    }
+
+    .topbar-inner{
+        max-width:1120px;
+        margin:0 auto;
+        display:flex;
+        align-items:center;
+        gap:32px;
+    }
+
+    .brand{
+        display:flex;
+        align-items:center;
+        gap:12px;
+        font-size:22px;
+        font-weight:800;
+        color:var(--navy);
+        text-decoration:none;
+    }
+
+    .brand-tile{
+        width:42px;
+        height:42px;
+        border-radius:13px;
+        background:#fff;
+        display:grid;
+        place-items:center;
+        box-shadow:0 6px 16px rgba(42,95,133,0.16);
+    }
+
+    .brand-tile svg{
+        width:20px;
+        height:20px;
+        fill:#2f6b8f;
+    }
+
+    .topnav{
+        display:flex;
+        gap:6px;
+        flex:1;
+    }
+
+    .topnav a{
+        padding:10px 16px;
+        border-radius:12px;
+        font-size:15px;
+        font-weight:600;
+        color:var(--navy);
+        text-decoration:none;
+        opacity:0.75;
+        transition:background .2s, opacity .2s;
+    }
+
+    .topnav a:hover{
+        background:rgba(255,255,255,0.45);
+        opacity:1;
+    }
+
+    .topnav a.active{
+        background:#fff;
+        color:var(--brand);
+        opacity:1;
+        box-shadow:0 4px 12px rgba(42,95,133,0.12);
+    }
+
+    .topbar-user{
+        display:flex;
+        align-items:center;
+        gap:12px;
+    }
+
+    .avatar{
+        width:42px;
+        height:42px;
+        border-radius:50%;
+        background:linear-gradient(135deg,var(--brand),var(--brand-light));
+        color:#fff;
+        display:grid;
+        place-items:center;
+        font-weight:700;
+        font-size:16px;
+    }
+
+    .topbar-name{
+        font-size:15px;
+        font-weight:700;
+        color:var(--navy);
+        line-height:1.25;
+    }
+
+    .topbar-name small{
+        display:block;
+        font-size:12px;
+        font-weight:500;
+        color:rgba(19,40,60,0.6);
+    }
+
+    /* Page */
+    .sheet{
+        flex:1;
+        width:100%;
+        max-width:1184px;
+        margin:0 auto;
+        background:none;
+        box-shadow:none;
+        border-radius:0;
+        padding:28px 32px 56px;
+    }
+
+    .page-head h1{
+        font-size:34px;
+    }
+
+    .page-subtitle{
+        color:rgba(19,40,60,0.7);
+        font-size:16px;
+    }
+
+    /* Two columns: main (wider) + side */
+    .content-grid{
+        display:grid;
+        grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);
+        gap:24px;
+        align-items:start;
+        margin-top:36px;
+    }
+
+    .content-col{
+        gap:24px;
+    }
+
+    .content-grid.single{
+        grid-template-columns:minmax(0,1fr);
+    }
+
+    /* Blocks become white cards */
+    .panel{
+        background:#fff;
+        border-radius:20px;
+        padding:22px 24px;
+        box-shadow:0 10px 30px rgba(19,40,60,0.06);
+    }
+
+    .panel-title{
+        font-size:16px;
+        font-weight:700;
+        color:var(--navy);
+        margin-bottom:14px;
+    }
+
+    .panel .list-box{
+        background:none;
+        border:none;
+        padding:0;
+        border-radius:0;
+    }
+
+    .bill-card{
+        padding:28px;
+    }
+
+    .bill-amount{
+        font-size:48px;
+    }
+
+    .bill-stats{
+        gap:12px;
+        margin-top:22px;
+    }
+
+    .bill-stats div{
+        padding:14px 16px;
+    }
+
+    .bill-stats strong{
+        font-size:18px;
+    }
+}

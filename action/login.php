@@ -1,0 +1,62 @@
+<?php
+
+session_start();
+require "../database/database.php";
+
+$user_code = $_POST["user_code"] ?? "";
+$password  = $_POST["password"] ?? "";
+
+function login_failed(string $message): never
+{
+    header("Location: ../index.html?error=" . urlencode($message));
+    exit;
+}
+
+if (!$user_code || !$password) {
+    login_failed("Please enter your User ID and password.");
+}
+
+$stmt = $pdo->prepare("SELECT * FROM users WHERE user_code = :user_code");
+$stmt->execute(["user_code" => $user_code]);
+
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Same message for unknown user and wrong password, so the login form
+// doesn't reveal which user codes exist
+if (!$user || $password !== $user["password"]) {
+    login_failed("Invalid User ID or password.");
+}
+
+// Consumers sign in on the same page and go to their own side
+if ($user["role"] === "consumer") {
+    $stmt = $pdo->prepare("SELECT name, status FROM consumers WHERE user_code = :user_code");
+    $stmt->execute(["user_code" => $user["user_code"]]);
+    $consumer = $stmt->fetch();
+
+    if (!$consumer) {
+        login_failed("No consumer profile found for this account.");
+    }
+
+    if ($consumer["status"] !== "Active") {
+        login_failed("This account is inactive. Please contact the San Vicente water office.");
+    }
+
+    session_regenerate_id(true);
+    $_SESSION["consumer"] = [
+        "user_code" => $user["user_code"],
+        "name"      => $consumer["name"],
+    ];
+
+    header("Location: ../user/home.php");
+    exit;
+}
+
+if ($user["role"] !== "admin") {
+    login_failed("This account does not have access.");
+}
+
+session_regenerate_id(true);
+$_SESSION["user"] = $user;
+
+header("Location: ../dashboard.php");
+exit;

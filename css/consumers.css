@@ -1,0 +1,309 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
+
+body{
+    background:#f4f7fb;
+    height:100vh;
+}
+
+.dashboard{
+    display:flex;
+    height:100vh;
+}
+
+/* SIDEBAR */
+.sidebar{
+    width:260px;
+    background:linear-gradient(180deg,#0b6fa4,#12b3c7);
+    color:white;
+    padding:30px 20px;
+    display:flex;
+    flex-direction:column;
+}
+
+.brand{
+    font-size:22px;
+    font-weight:700;
+    margin-bottom:40px;
+}
+
+.menu{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.menu a{
+    text-decoration:none;
+    color:white;
+    padding:12px 14px;
+    border-radius:10px;
+    font-size:14px;
+    transition:0.3s;
+    opacity:0.9;
+}
+
+.menu a:hover{
+    background:rgba(255,255,255,0.15);
+    opacity:1;
+}
+
+.menu a.active{
+    background:white;
+    color:#0b6fa4;
+    font-weight:600;
+}
+
+.logout-btn{
+    margin-top:auto;
+    text-decoration:none;
+    color:white;
+    padding:12px 14px;
+    border-radius:10px;
+    font-size:14px;
+    text-align:center;
+    background:rgba(255,255,255,0.12);
+    transition:0.3s;
+}
+
+.logout-btn:hover{
+    background:rgba(255,255,255,0.25);
+}
+
+/* MAIN */
+.main{
+    flex:1;
+    padding:40px;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.header h1{
+    font-size:26px;
+    color:#1f2937;
+}
+
+/* BUTTON */
+.btn{
+    padding:10px 14px;
+    background:#0b6fa4;
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.btn:hover{
+    background:#095d8a;
+}
+
+/* TABLE */
+.table-container{
+    background:white;
+    padding:20px;
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.05);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th, td{
+    text-align:left;
+    padding:12px;
+    border-bottom:1px solid #eee;
+    font-size:14px;
+}
+
+th{
+    color:#6b7280;
+    font-weight:600;
+}
+
+/* STATUS */
+.status{
+    padding:5px 10px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
+    display:inline-block;
+}
+
+.status.active{
+    background:#d1fae5;
+    color:#065f46;
+}
+
+.status.inactive{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+/* ACTIONS */
+.actions{
+    display:flex;
+    gap:8px;
+}
+
+/* EDIT */
+.btn-edit{
+    padding:6px 12px;
+    background:#0b6fa4;
+    color:white;
+    border-radius:8px;
+    text-decoration:none;
+    font-size:12px;
+    border:none;
+    cursor:pointer;
+}
+
+.btn-edit:hover{
+    background:#095d8a;
+}
+
+/* DELETE */
+.btn-delete{
+    padding:6px 12px;
+    background:#ef4444;
+    color:white;
+    border-radius:8px;
+    text-decoration:none;
+    font-size:12px;
+    border:none;
+    cursor:pointer;
+}
+
+.btn-delete:hover{
+    background:#dc2626;
+}
+
+/* MODAL BACKDROP */
+.modal{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.5);
+    justify-content:center;
+    align-items:center;
+}
+
+/* MODAL BOX */
+.modal-content{
+    background:white;
+    padding:25px;
+    border-radius:16px;
+    width:400px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    animation: pop 0.2s ease-out;
+}
+
+@keyframes pop{
+    from{
+        transform:scale(0.9);
+        opacity:0;
+    }
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+
+.modal-content h2{
+    margin-bottom:5px;
+    color:#1f2937;
+}
+
+/* INPUTS + SELECT */
+.modal-content input,
+.modal-content select{
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    outline:none;
+    font-size:14px;
+}
+.form-group{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    width:50%;
+}
+
+.form-group label{
+    font-size:13px;
+    color:#374151;
+    font-weight:600;
+}
+
+/* Make input AND select identical */
+.form-group input,
+.form-group select{
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    font-size:14px;
+    outline:none;
+    background:white;
+    width:100%;
+}
+
+/* Focus effect (same feel as inputs) */
+.form-group input:focus,
+.form-group select:focus{
+    border-color:#0b6fa4;
+    box-shadow:0 0 0 3px rgba(11,111,164,0.15);
+}
+
+/* BUTTON ROW (IMPORTANT FIX) */
+.modal-buttons{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+}
+
+/* SAVE BUTTON */
+.btn-save{
+    flex:1;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    background:#0b6fa4;
+    color:white;
+    cursor:pointer;
+}
+
+.btn-save:hover{
+    background:#095d8a;
+}
+
+/* CANCEL BUTTON */
+.btn-cancel{
+    flex:1;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    background:#e5e7eb;
+    color:#374151;
+    cursor:pointer;
+}
+
+.btn-cancel:hover{
+    background:#d1d5db;
+}
