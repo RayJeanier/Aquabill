@@ -1566,3 +1566,19 @@ textarea{
         box-shadow:0 6px 16px rgba(42,95,133,0.2);
     }
 }
+
+/* ---------- Contact information (Settings) ---------- */
+.optional{
+    font-weight:500;
+    color:var(--muted);
+}
+
+.settings-icon.teal-tile{
+    background:#d9f2f5;
+    color:#17707c;
+}
+
+/* long email addresses wrap instead of overflowing */
+.list-row strong.break{
+    overflow-wrap:anywhere;
+}

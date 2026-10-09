@@ -2,6 +2,7 @@
 
 require '../includes/auth.php';
 include '../database/database.php';
+require '../includes/contact.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -9,7 +10,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $address = $_POST['address'];
     $meter_no = $_POST['meter_no'];
-    $status = $_POST['status']; // ✅ ADD THIS
+    $status = $_POST['status'];
+
+    // Optional - empty clears it
+    [$contact_number, $contactError] = clean_contact_number($_POST['contact_number'] ?? '');
+    [$email, $emailError] = clean_email($_POST['email'] ?? '');
+
+    if ($contactError || $emailError) {
+        header("Location: ../consumers.php?error=" . urlencode($contactError ?? $emailError));
+        exit;
+    }
 
     try {
 
@@ -18,7 +28,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             SET name = :name,
                 address = :address,
                 meter_no = :meter_no,
-                status = :status
+                status = :status,
+                contact_number = :contact_number,
+                email = :email
             WHERE user_code = :user_code
         ");
 
@@ -26,7 +38,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ':name' => $name,
             ':address' => $address,
             ':meter_no' => $meter_no,
-            ':status' => $status,   // ✅ ADD THIS
+            ':status' => $status,
+            ':contact_number' => $contact_number,
+            ':email' => $email,
             ':user_code' => $user_code
         ]);
 

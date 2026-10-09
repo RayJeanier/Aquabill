@@ -15,6 +15,8 @@ $sql = "
         c.status,
         c.user_code,
         c.qr_code,
+        c.contact_number,
+        c.email,
         u.role
     FROM consumers c
     INNER JOIN users u
@@ -113,6 +115,7 @@ $activeCount = count(array_filter($consumers, fn ($c) => $c["status"] === "Activ
                         <th>Name</th>
                         <th>Address</th>
                         <th>Meter No.</th>
+                        <th>Contact</th>
                         <th>Status</th>
                         <th>User Code</th>
                         <th class="cell-actions"><span class="sr-only">Actions</span></th>
@@ -122,7 +125,7 @@ $activeCount = count(array_filter($consumers, fn ($c) => $c["status"] === "Activ
                 <tbody id="consumerRows">
 
                 <?php if (!$consumers): ?>
-                    <tr><td colspan="6" class="empty">No consumers yet.</td></tr>
+                    <tr><td colspan="7" class="empty">No consumers yet.</td></tr>
                 <?php endif; ?>
 
                 <?php foreach ($consumers as $row): ?>
@@ -132,6 +135,19 @@ $activeCount = count(array_filter($consumers, fn ($c) => $c["status"] === "Activ
                         <td><strong><?= htmlspecialchars($row['name']) ?></strong></td>
                         <td class="muted"><?= htmlspecialchars($row['address']) ?></td>
                         <td><?= htmlspecialchars($row['meter_no']) ?></td>
+
+                        <td class="contact-cell">
+                            <?php if (!$row['contact_number'] && !$row['email']): ?>
+                                <span class="muted">Not provided</span>
+                            <?php else: ?>
+                                <?php if ($row['contact_number']): ?>
+                                    <span><?= icon("phone", "icon icon-sm") ?> <?= htmlspecialchars($row['contact_number']) ?></span>
+                                <?php endif; ?>
+                                <?php if ($row['email']): ?>
+                                    <span class="muted"><?= icon("mail", "icon icon-sm") ?> <?= htmlspecialchars($row['email']) ?></span>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </td>
 
                         <td>
                             <span class="badge dot <?= strtolower($row['status']) ?>">
@@ -164,6 +180,8 @@ $activeCount = count(array_filter($consumers, fn ($c) => $c["status"] === "Activ
                                         data-name="<?= htmlspecialchars($row['name']) ?>"
                                         data-address="<?= htmlspecialchars($row['address']) ?>"
                                         data-meter="<?= htmlspecialchars($row['meter_no']) ?>"
+                                        data-contact="<?= htmlspecialchars($row['contact_number'] ?? '') ?>"
+                                        data-email="<?= htmlspecialchars($row['email'] ?? '') ?>"
                                         data-status="<?= htmlspecialchars($row['status']) ?>">
                                         <?= icon("pencil") ?> Edit details
                                     </button>
@@ -193,7 +211,7 @@ $activeCount = count(array_filter($consumers, fn ($c) => $c["status"] === "Activ
 
                 <?php endforeach; ?>
 
-                <tr id="noMatches" hidden><td colspan="6" class="empty">No consumers match your search.</td></tr>
+                <tr id="noMatches" hidden><td colspan="7" class="empty">No consumers match your search.</td></tr>
 
                 </tbody>
 
@@ -230,6 +248,18 @@ $activeCount = count(array_filter($consumers, fn ($c) => $c["status"] === "Activ
                 Meter Number
                 <input type="text" name="meter_no" required>
             </label>
+
+            <div class="form-row">
+                <label>
+                    <span>Contact Number <span class="optional">(optional)</span></span>
+                    <input type="tel" name="contact_number" inputmode="tel" autocomplete="off" placeholder="0917 123 4567">
+                </label>
+
+                <label>
+                    <span>Email <span class="optional">(optional)</span></span>
+                    <input type="email" name="email" autocomplete="off" placeholder="name@example.com">
+                </label>
+            </div>
 
             <p class="hint">A user code and QR code are generated automatically. Default password: <?= htmlspecialchars(DEFAULT_CONSUMER_PASSWORD) ?></p>
 
@@ -311,6 +341,18 @@ $activeCount = count(array_filter($consumers, fn ($c) => $c["status"] === "Activ
                 </label>
             </div>
 
+            <div class="form-row">
+                <label>
+                    <span>Contact Number <span class="optional">(optional)</span></span>
+                    <input type="tel" name="contact_number" id="edit_contact" inputmode="tel" autocomplete="off" placeholder="0917 123 4567">
+                </label>
+
+                <label>
+                    <span>Email <span class="optional">(optional)</span></span>
+                    <input type="email" name="email" id="edit_email" autocomplete="off" placeholder="name@example.com">
+                </label>
+            </div>
+
             <div class="modal-foot">
                 <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
                 <button type="submit" class="btn"><?= icon("save") ?> Save Changes</button>
@@ -330,6 +372,8 @@ document.querySelectorAll(".edit-consumer").forEach((button) => {
         document.getElementById("edit_name").value = button.dataset.name;
         document.getElementById("edit_address").value = button.dataset.address;
         document.getElementById("edit_meter_no").value = button.dataset.meter;
+        document.getElementById("edit_contact").value = button.dataset.contact;
+        document.getElementById("edit_email").value = button.dataset.email;
         document.getElementById("edit_status").value = button.dataset.status;
         openModal("editModal");
     });

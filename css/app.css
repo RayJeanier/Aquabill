@@ -498,6 +498,8 @@ input[type=number],
 input[type=password],
 input[type=date],
 input[type=search],
+input[type=tel],
+input[type=email],
 select,
 textarea{
     width:100%;
@@ -1176,4 +1178,30 @@ tfoot td{
     .main{ padding:20px 16px; }
     .grid-2{ grid-template-columns:1fr; }
     .filters.compact > *{ flex:1; }
+}
+
+/* "(optional)" next to a form label */
+.optional{
+    font-weight:400;
+    color:var(--faint);
+}
+
+/* Contact column on the Consumers list */
+.contact-cell{
+    font-size:13px;
+    white-space:nowrap;
+}
+
+.contact-cell span{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+.contact-cell span + span{
+    margin-top:3px;
+}
+
+.contact-cell .icon{
+    color:var(--faint);
 }

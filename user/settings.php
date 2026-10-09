@@ -5,9 +5,9 @@ require_once "includes/account.php";
 
 $userCode = $_SESSION["consumer"]["user_code"];
 
-$stmt = $pdo->prepare("SELECT name, address, meter_no FROM consumers WHERE user_code = :user_code");
+$stmt = $pdo->prepare("SELECT name, address, meter_no, contact_number, email FROM consumers WHERE user_code = :user_code");
 $stmt->execute([":user_code" => $userCode]);
-$consumer = $stmt->fetch() ?: ["name" => "", "address" => "", "meter_no" => ""];
+$consumer = $stmt->fetch() ?: ["name" => "", "address" => "", "meter_no" => "", "contact_number" => null, "email" => null];
 
 $stmt = $pdo->prepare("SELECT username FROM users WHERE user_code = :user_code");
 $stmt->execute([":user_code" => $userCode]);
@@ -30,9 +30,51 @@ include "includes/header.php";
             <div class="alert success">Username saved. You can now log in with <strong><?= htmlspecialchars($username) ?></strong> or your User ID.</div>
         <?php elseif (isset($_GET["username_removed"])): ?>
             <div class="alert success">Username removed. Log in with your User ID from now on.</div>
+        <?php elseif (isset($_GET["contact_saved"])): ?>
+            <div class="alert success">Contact information saved. The water office can now reach you there.</div>
         <?php elseif (isset($_GET["error"])): ?>
             <div class="alert error"><?= htmlspecialchars($_GET["error"]) ?></div>
         <?php endif; ?>
+
+        <!-- CONTACT INFORMATION -->
+        <section class="card" aria-labelledby="contactTitle">
+            <div class="settings-title">
+                <span class="settings-icon teal-tile"><?= nav_icon("phone") ?></span>
+                <div>
+                    <h2 class="section-title" id="contactTitle">Contact information</h2>
+                    <p class="card-sub">
+                        <?php if (!$consumer["contact_number"] && !$consumer["email"]): ?>
+                            Add a number or email so the water office can reach you about bills and repairs.
+                        <?php else: ?>
+                            The water office uses this to reach you about bills and repairs.
+                        <?php endif; ?>
+                    </p>
+                </div>
+            </div>
+
+            <form class="form" method="POST" action="action/update_contact.php">
+
+                <label class="field">
+                    <span>Mobile number <span class="optional">(optional)</span></span>
+                    <input type="tel" name="contact_number" inputmode="tel" autocomplete="tel"
+                           value="<?= htmlspecialchars($consumer["contact_number"] ?? "") ?>"
+                           placeholder="0917 123 4567">
+                </label>
+
+                <label class="field">
+                    <span>Email <span class="optional">(optional)</span></span>
+                    <input type="email" name="email" autocomplete="email" autocapitalize="none" spellcheck="false"
+                           value="<?= htmlspecialchars($consumer["email"] ?? "") ?>"
+                           placeholder="name@example.com">
+                    <small class="field-hint">Leave a box empty to remove it.</small>
+                </label>
+
+                <button type="submit" class="btn-primary" style="margin-top:4px">
+                    Save Contact Information
+                </button>
+
+            </form>
+        </section>
 
         <!-- USERNAME -->
         <section class="card" aria-labelledby="usernameTitle">
@@ -153,6 +195,14 @@ include "includes/header.php";
             <div class="list-row">
                 <span class="row-main"><?= row_icon("gauge", "amber") ?><span class="label">Meter No.</span></span>
                 <strong><?= htmlspecialchars($consumer["meter_no"]) ?></strong>
+            </div>
+            <div class="list-row">
+                <span class="row-main"><?= row_icon("phone", "green") ?><span class="label">Mobile</span></span>
+                <strong><?= $consumer["contact_number"] ? htmlspecialchars($consumer["contact_number"]) : "Not set" ?></strong>
+            </div>
+            <div class="list-row">
+                <span class="row-main"><?= row_icon("mail", "blue") ?><span class="label">Email</span></span>
+                <strong class="break"><?= $consumer["email"] ? htmlspecialchars($consumer["email"]) : "Not set" ?></strong>
             </div>
 
             <p class="note">To change your name, address or meter number, please visit the San Vicente water office.</p>

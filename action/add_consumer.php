@@ -5,6 +5,7 @@ include '../database/database.php';
 require '../includes/consumer_defaults.php';
 require '../includes/qr.php';
 require '../includes/passwords.php';
+require '../includes/contact.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -12,6 +13,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $address = trim($_POST['address']);
     $meter_no = trim($_POST['meter_no']);
     $password = hash_password(DEFAULT_CONSUMER_PASSWORD);
+
+    // Optional - can be left empty and filled in later by the consumer
+    [$contact_number, $contactError] = clean_contact_number($_POST['contact_number'] ?? '');
+    [$email, $emailError] = clean_email($_POST['email'] ?? '');
+
+    if ($contactError || $emailError) {
+        header("Location: ../consumers.php?error=" . urlencode($contactError ?? $emailError));
+        exit;
+    }
 
     try {
 
@@ -44,9 +54,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Create consumer profile, with its QR code value generated at the same time
         $stmtConsumer = $pdo->prepare("
             INSERT INTO consumers
-            (user_code, name, address, meter_no, status, qr_code)
+            (user_code, name, address, meter_no, status, qr_code, contact_number, email)
             VALUES
-            (:user_code, :name, :address, :meter_no, :status, :qr_code)
+            (:user_code, :name, :address, :meter_no, :status, :qr_code, :contact_number, :email)
         ");
 
         $stmtConsumer->execute([
@@ -55,7 +65,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ':address' => $address,
             ':meter_no' => $meter_no,
             ':status' => 'Active',
-            ':qr_code' => consumer_qr_value($user_code)
+            ':qr_code' => consumer_qr_value($user_code),
+            ':contact_number' => $contact_number,
+            ':email' => $email
         ]);
 
         $pdo->commit();
