@@ -1,5 +1,6 @@
 <?php
 require "includes/auth.php";
+require_once "includes/icons.php";
 require "includes/billing.php";
 
 $pricing = get_pricing();
@@ -13,8 +14,9 @@ $sampleUsages = [5, 10, 15, 20, 30, 50];
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pricing - AquaBill</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/app.css">
+    <script src="js/admin.js" defer></script>
 </head>
 
 <body>
@@ -33,9 +35,9 @@ $sampleUsages = [5, 10, 15, 20, 30, 50];
         </div>
 
         <?php if (isset($_GET["success"])): ?>
-            <div class="alert success">Pricing updated.</div>
+            <div class="alert success"><?= icon("check-circle") ?> Pricing updated.</div>
         <?php elseif (isset($_GET["error"])): ?>
-            <div class="alert error"><?= htmlspecialchars($_GET["error"]) ?></div>
+            <div class="alert error"><?= icon("alert") ?> <?= htmlspecialchars($_GET["error"]) ?></div>
         <?php endif; ?>
 
         <div class="grid-2">
@@ -69,7 +71,7 @@ $sampleUsages = [5, 10, 15, 20, 30, 50];
                         <span class="hint">Counted from the meter reading date. Shown to consumers on their bills.</span>
                     </label>
 
-                    <button type="submit" class="btn">Save Rates</button>
+                    <button type="submit" class="btn"><?= icon("save") ?> Save Rates</button>
 
                 </form>
 

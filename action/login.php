@@ -3,8 +3,11 @@
 session_start();
 require "../database/database.php";
 
-$user_code = $_POST["user_code"] ?? "";
-$password  = $_POST["password"] ?? "";
+// The login box accepts either the user code (SVOB-CONS-...) or the username a
+// consumer chose in Settings. Both are matched ignoring letter case and stray spaces
+// that phone keyboards add. Password is trimmed like the Android app does.
+$login    = trim($_POST["user_code"] ?? "");
+$password = trim($_POST["password"] ?? "");
 
 function login_failed(string $message): never
 {
@@ -12,19 +15,27 @@ function login_failed(string $message): never
     exit;
 }
 
-if (!$user_code || !$password) {
-    login_failed("Please enter your User ID and password.");
+if ($login === "" || $password === "") {
+    login_failed("Please enter your User ID or username and password.");
 }
 
-$stmt = $pdo->prepare("SELECT * FROM users WHERE user_code = :user_code");
-$stmt->execute(["user_code" => $user_code]);
+$stmt = $pdo->prepare("
+    SELECT * FROM users
+    WHERE UPPER(TRIM(user_code)) = :user_code
+       OR LOWER(username) = :username
+    LIMIT 1
+");
+$stmt->execute([
+    "user_code" => strtoupper($login),
+    "username"  => strtolower($login),
+]);
 
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Same message for unknown user and wrong password, so the login form
 // doesn't reveal which user codes exist
 if (!$user || $password !== $user["password"]) {
-    login_failed("Invalid User ID or password.");
+    login_failed("Invalid User ID / username or password.");
 }
 
 // Consumers sign in on the same page and go to their own side

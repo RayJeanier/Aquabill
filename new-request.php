@@ -1,5 +1,6 @@
 <?php
 require "includes/auth.php";
+require_once "includes/icons.php";
 require "database/database.php";
 
 $consumers = $pdo->query("
@@ -25,8 +26,9 @@ $requestTypes = [
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>New Request - AquaBill</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/app.css">
+    <script src="js/admin.js" defer></script>
 </head>
 
 <body>
@@ -45,7 +47,7 @@ $requestTypes = [
         </div>
 
         <?php if (isset($_GET["error"])): ?>
-            <div class="alert error"><?= htmlspecialchars($_GET["error"]) ?></div>
+            <div class="alert error"><?= icon("alert") ?> <?= htmlspecialchars($_GET["error"]) ?></div>
         <?php endif; ?>
 
         <div class="panel" style="max-width:640px">
@@ -79,8 +81,8 @@ $requestTypes = [
                 </label>
 
                 <div class="form-row">
-                    <a href="maintenance.php" class="btn btn-secondary" style="text-align:center">Cancel</a>
-                    <button type="submit" class="btn">Submit Request</button>
+                    <a href="maintenance.php" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn"><?= icon("check") ?> Submit Request</button>
                 </div>
 
             </form>

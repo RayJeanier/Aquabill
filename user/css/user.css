@@ -99,19 +99,6 @@ textarea{
     background:rgba(255,255,255,0.28);
 }
 
-/* Orange dot on the bell when there's an unpaid balance */
-.has-dot::after{
-    content:"";
-    position:absolute;
-    top:9px;
-    right:10px;
-    width:9px;
-    height:9px;
-    border-radius:50%;
-    background:#f5a524;
-    box-shadow:0 0 0 2px #3a86b8;
-}
-
 /* ===================== COMPUTER-ONLY PIECES ===================== */
 
 .topbar,
@@ -724,9 +711,10 @@ textarea{
     color:#4a5e70;
 }
 
+.field input,
 .field textarea{
     width:100%;
-    min-height:130px;
+    height:52px;
     padding:14px 16px;
     background:var(--soft-bg);
     border:1px solid var(--soft-border);
@@ -739,10 +727,110 @@ textarea{
     transition:border-color .2s, box-shadow .2s, background .2s;
 }
 
+.field textarea{
+    height:auto;
+    min-height:130px;
+}
+
+.field input:focus,
 .field textarea:focus{
     background:#fff;
     border-color:var(--brand-light);
     box-shadow:0 0 0 4px rgba(45,155,214,0.15);
+}
+
+.field-hint{
+    font-size:12px;
+    font-weight:500;
+    color:var(--muted);
+}
+
+/* Secondary destructive action shown as a link (e.g. Remove username) */
+.btn-link-danger{
+    align-self:center;
+    padding:6px 10px;
+    border:none;
+    background:none;
+    color:var(--critical);
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    border-radius:8px;
+}
+
+.btn-link-danger:hover{
+    background:var(--critical-bg);
+}
+
+/* "Show passwords" checkbox */
+.check-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:14px;
+    color:#4a5e70;
+    cursor:pointer;
+}
+
+.check-row input{
+    width:18px;
+    height:18px;
+    accent-color:var(--brand);
+}
+
+/* Settings card heading with an icon tile */
+.settings-title{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    margin-bottom:20px;
+}
+
+.settings-title .section-title{
+    margin-bottom:2px;
+}
+
+.settings-icon{
+    width:46px;
+    height:46px;
+    border-radius:14px;
+    background:#e7eef5;
+    color:var(--brand);
+    display:grid;
+    place-items:center;
+    flex-shrink:0;
+}
+
+.settings-icon svg,
+.btn-outline svg{
+    width:22px;
+    height:22px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+/* Log out button on the settings page */
+.btn-outline{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    height:54px;
+    border:1.5px solid #f3c7c3;
+    border-radius:16px;
+    background:#fff;
+    color:var(--critical);
+    font-size:16px;
+    font-weight:700;
+    text-decoration:none;
+    transition:background .2s;
+}
+
+.btn-outline:hover{
+    background:var(--critical-bg);
 }
 
 .type-options{
@@ -945,8 +1033,9 @@ textarea{
         background:rgba(255,255,255,0.9);
     }
 
-    .icon-btn.has-dot::after{
-        box-shadow:0 0 0 2px #d5eef7;
+    .icon-btn.active{
+        background:#fff;
+        box-shadow:0 4px 12px rgba(42,95,133,0.12);
     }
 
     .avatar{

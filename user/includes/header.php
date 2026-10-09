@@ -3,6 +3,7 @@
 // Shared layout for consumer pages. Usage:
 //
 //   $pageTitle    = "Bills";                    // browser tab
+//   (settings.php is reached from the gear icon in the header, not the tab bar)
 //   $pageEyebrow  = "Good morning,";            // optional small line above the heading
 //   $pageHeading  = "My Bills";                 // big heading
 //   $pageSubtitle = "Paid and unpaid bills";    // optional
@@ -28,7 +29,10 @@ $navIcons = [
     "bill"    => '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/>',
     "wrench"  => '<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/>',
     "history" => '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 7v10M14.5 9h-3.25a1.75 1.75 0 0 0 0 3.5h1.5a1.75 1.75 0 0 1 0 3.5H9.5"/>',
-    "bell"    => '<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+    "settings"=> '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+    "lock"    => '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+    "user"    => '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    "eye"     => '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',
     "logout"  => '<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5"/><path d="M5 12h11"/>',
 ];
 
@@ -47,11 +51,6 @@ $pageTitle    = $pageTitle ?? "My Account";
 $pageHeading  = $pageHeading ?? $pageTitle;
 $pageEyebrow  = $pageEyebrow ?? "";
 $pageSubtitle = $pageSubtitle ?? "";
-
-// The bell shows a dot while the consumer has an unpaid balance
-$account   ??= get_consumer_account($pdo, $consumerCode);
-$hasUnpaid   = $account["balance"] > 0;
-$bellLabel   = $hasUnpaid ? "You have an unpaid balance" : "No unpaid bills";
 
 $dropIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c-.3 0-.6.15-.78.4C9.6 5.1 5.5 10.9 5.5 14.5a6.5 6.5 0 0 0 13 0c0-3.6-4.1-9.4-5.72-11.6A.97.97 0 0 0 12 2.5Z"/></svg>';
 ?>
@@ -85,7 +84,7 @@ $dropIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c-.3 0-
         </nav>
 
         <div class="topbar-user">
-            <a href="bills.php" class="icon-btn <?= $hasUnpaid ? 'has-dot' : '' ?>" aria-label="<?= $bellLabel ?>" title="<?= $bellLabel ?>"><?= nav_icon("bell") ?></a>
+            <a href="settings.php" class="icon-btn <?= $currentUserPage === 'settings.php' ? 'active' : '' ?>" aria-label="Settings" title="Settings"><?= nav_icon("settings") ?></a>
             <span class="avatar" aria-hidden="true"><?= htmlspecialchars($initial) ?></span>
             <span class="topbar-name">
                 <?= htmlspecialchars($consumerName) ?>
@@ -110,7 +109,7 @@ $dropIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c-.3 0-
     </div>
 
     <div class="app-header-actions">
-        <a href="bills.php" class="round-btn <?= $hasUnpaid ? 'has-dot' : '' ?>" aria-label="<?= $bellLabel ?>"><?= nav_icon("bell") ?></a>
+        <a href="settings.php" class="round-btn" aria-label="Settings"><?= nav_icon("settings") ?></a>
         <a href="action/logout.php" class="round-btn" aria-label="Log out"><?= nav_icon("logout") ?></a>
     </div>
 </header>

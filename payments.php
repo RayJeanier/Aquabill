@@ -1,5 +1,6 @@
 <?php
 require "includes/auth.php";
+require_once "includes/icons.php";
 require "database/database.php";
 require_once "user/includes/account.php";
 
@@ -30,8 +31,9 @@ $payments = $pdo->query("
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Payments - AquaBill</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/app.css">
+    <script src="js/admin.js" defer></script>
 </head>
 
 <body>
@@ -50,9 +52,9 @@ $payments = $pdo->query("
         </div>
 
         <?php if (isset($_GET["success"])): ?>
-            <div class="alert success">Payment recorded successfully.</div>
+            <div class="alert success"><?= icon("check-circle") ?> Payment recorded successfully.</div>
         <?php elseif (isset($_GET["error"])): ?>
-            <div class="alert error"><?= htmlspecialchars($_GET["error"]) ?></div>
+            <div class="alert error"><?= icon("alert") ?> <?= htmlspecialchars($_GET["error"]) ?></div>
         <?php endif; ?>
 
         <div class="grid-2">
@@ -91,7 +93,7 @@ $payments = $pdo->query("
                         <span class="hint" id="amountHint">Payment method: Cash</span>
                     </label>
 
-                    <button type="submit" class="btn">Encode Payment</button>
+                    <button type="submit" class="btn"><?= icon("check") ?> Encode Payment</button>
 
                 </form>
 

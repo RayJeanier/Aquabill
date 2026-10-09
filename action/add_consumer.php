@@ -3,6 +3,7 @@
 require '../includes/auth.php';
 include '../database/database.php';
 require '../includes/consumer_defaults.php';
+require '../includes/qr.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -39,12 +40,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $user_code = $user['user_code'];
 
-        // Create consumer profile
+        // Create consumer profile, with its QR code value generated at the same time
         $stmtConsumer = $pdo->prepare("
             INSERT INTO consumers
-            (user_code, name, address, meter_no, status)
+            (user_code, name, address, meter_no, status, qr_code)
             VALUES
-            (:user_code, :name, :address, :meter_no, :status)
+            (:user_code, :name, :address, :meter_no, :status, :qr_code)
         ");
 
         $stmtConsumer->execute([
@@ -52,7 +53,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ':name' => $name,
             ':address' => $address,
             ':meter_no' => $meter_no,
-            ':status' => 'Active'
+            ':status' => 'Active',
+            ':qr_code' => consumer_qr_value($user_code)
         ]);
 
         $pdo->commit();

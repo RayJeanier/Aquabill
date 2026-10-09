@@ -1,6 +1,7 @@
 <?php
 require "includes/auth.php";
 require "database/database.php";
+require_once "includes/icons.php";
 
 date_default_timezone_set("Asia/Manila");
 
@@ -32,7 +33,7 @@ $recentPayments = $pdo->query("
 ")->fetchAll();
 
 $pendingRequests = $pdo->query("
-    SELECT request_type, consumer_name, status
+    SELECT request_type, consumer_name, status, created_at
     FROM maintenance_requests
     WHERE status IN ('Open', 'In Progress')
     ORDER BY created_at DESC
@@ -49,8 +50,9 @@ $greeting = $hour < 12 ? "Good morning" : ($hour < 18 ? "Good afternoon" : "Good
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>AquaBill Admin Dashboard</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/app.css">
+    <script src="js/admin.js" defer></script>
 </head>
 <body>
 <div class="dashboard">
@@ -61,75 +63,101 @@ $greeting = $hour < 12 ? "Good morning" : ($hour < 18 ? "Good afternoon" : "Good
     <div class="main">
 
         <!-- HEADER -->
-        <div class="dashboard-header">
-            <h1><?= $greeting ?>, Admin</h1>
-            <p>Here's what's happening today, <?= date("F j, Y") ?></p>
+        <div class="header">
+            <div>
+                <h1><?= $greeting ?>, Admin</h1>
+                <p>Here's what's happening today, <?= date("F j, Y") ?></p>
+            </div>
+
+            <div class="header-actions">
+                <a href="payments.php" class="btn btn-secondary"><?= icon("wallet") ?> Encode Payment</a>
+                <a href="meter-readings.php" class="btn"><?= icon("gauge") ?> Meter Readings</a>
+            </div>
         </div>
 
         <!-- STATS CARDS -->
-        <div class="cards">
+        <div class="stats">
 
-            <div class="card">
-                <h3>Total Consumers</h3>
-                <p><?= number_format($totalConsumers) ?></p>
+            <div class="stat-card">
+                <span class="stat-icon"><?= icon("users") ?></span>
+                <div>
+                    <h5>Total Consumers</h5>
+                    <p><?= number_format($totalConsumers) ?></p>
+                </div>
             </div>
 
-            <div class="card">
-                <h3>Revenue This Month</h3>
-                <p>₱<?= number_format($revenueThisMonth, 2) ?></p>
+            <div class="stat-card">
+                <span class="stat-icon green"><?= icon("trend") ?></span>
+                <div>
+                    <h5>Revenue This Month</h5>
+                    <p>₱<?= number_format($revenueThisMonth, 2) ?></p>
+                </div>
             </div>
 
-            <div class="card">
-                <h3>Payments This Month</h3>
-                <p><?= number_format($paymentsThisMonth) ?></p>
+            <div class="stat-card">
+                <span class="stat-icon violet"><?= icon("receipt") ?></span>
+                <div>
+                    <h5>Payments This Month</h5>
+                    <p><?= number_format($paymentsThisMonth) ?></p>
+                </div>
             </div>
 
-            <div class="card">
-                <h3>Open Requests</h3>
-                <p><?= number_format($openRequests) ?></p>
+            <div class="stat-card">
+                <span class="stat-icon amber"><?= icon("wrench") ?></span>
+                <div>
+                    <h5>Open Requests</h5>
+                    <p><?= number_format($openRequests) ?></p>
+                </div>
             </div>
 
         </div>
 
         <!-- CONTENT GRID -->
-        <div class="dashboard-grid">
+        <div class="grid-2">
 
             <!-- LEFT: RECENT PAYMENTS -->
             <div class="panel">
 
-                <h2>Recent Payments</h2>
+                <div class="panel-head">
+                    <h2>Recent Payments</h2>
+                    <a href="payment-records.php" class="icon-btn" aria-label="View all payment records" data-tooltip="View all"><?= icon("arrow") ?></a>
+                </div>
 
-                <table>
-                    <?php if (!$recentPayments): ?>
-                        <tr><td>No payments yet.</td></tr>
-                    <?php endif; ?>
+                <?php if (!$recentPayments): ?>
+                    <p class="hint">No payments yet.</p>
+                <?php endif; ?>
 
-                    <?php foreach ($recentPayments as $p): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($p["consumer_name"]) ?></td>
-                            <td><?= htmlspecialchars($p["payment_method"]) ?></td>
-                            <td><?= date("M d", strtotime($p["payment_date"])) ?></td>
-                            <td style="text-align:right">₱<?= number_format($p["amount"], 2) ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </table>
+                <?php foreach ($recentPayments as $p): ?>
+                    <div class="transaction">
+                        <div>
+                            <?= htmlspecialchars($p["consumer_name"]) ?>
+                            <small><?= htmlspecialchars($p["payment_method"]) ?> · <?= date("M d, Y g:i A", strtotime($p["payment_date"])) ?></small>
+                        </div>
+                        <div class="price">₱<?= number_format($p["amount"], 2) ?></div>
+                    </div>
+                <?php endforeach; ?>
 
             </div>
 
             <!-- RIGHT: MAINTENANCE -->
             <div class="panel">
 
-                <h2>Maintenance</h2>
+                <div class="panel-head">
+                    <h2>Maintenance</h2>
+                    <a href="maintenance.php" class="icon-btn" aria-label="View all maintenance requests" data-tooltip="View all"><?= icon("arrow") ?></a>
+                </div>
 
                 <?php if (!$pendingRequests): ?>
-                    <div class="item">No open requests.</div>
+                    <p class="hint">No open requests.</p>
                 <?php endif; ?>
 
                 <?php foreach ($pendingRequests as $r): ?>
-                    <div class="item">
-                        <strong><?= htmlspecialchars($r["request_type"]) ?></strong>
-                        · <?= htmlspecialchars($r["consumer_name"]) ?>
-                        <br><small><?= htmlspecialchars($r["status"]) ?></small>
+                    <div class="list-item">
+                        <div>
+                            <strong><?= htmlspecialchars($r["request_type"]) ?></strong>
+                            <small><?= htmlspecialchars($r["consumer_name"]) ?> · <?= date("M d", strtotime($r["created_at"])) ?></small>
+                        </div>
+                        <span class="badge dot <?= strtolower(str_replace(" ", "-", $r["status"])) ?>"><?= htmlspecialchars($r["status"]) ?></span>
                     </div>
                 <?php endforeach; ?>
 

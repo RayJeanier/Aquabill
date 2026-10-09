@@ -47,7 +47,11 @@
                 <input
                     type="text"
                     name="user_code"
-                    placeholder="User ID"
+                    placeholder="USER ID OR USERNAME (eg. SVOB-XXXX-XXXXXX)"
+                    autocomplete="username"
+                    autocapitalize="characters"
+                    autocorrect="off"
+                    spellcheck="false"
                     required
                 >
 
@@ -55,6 +59,7 @@
                     type="password"
                     name="password"
                     placeholder="Password"
+                    autocomplete="current-password"
                     required
                 >
 

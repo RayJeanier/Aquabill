@@ -1,5 +1,6 @@
 <?php
 require "includes/auth.php";
+require_once "includes/icons.php";
 require "database/database.php";
 
 $search = trim($_GET["search"] ?? "");
@@ -48,8 +49,9 @@ $totalAmount = array_sum(array_column($payments, "amount"));
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Payment Records - AquaBill</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/app.css">
+    <script src="js/admin.js" defer></script>
 </head>
 
 <body>
@@ -65,26 +67,36 @@ $totalAmount = array_sum(array_column($payments, "amount"));
                 <h1>Payment Records</h1>
                 <p>All payments encoded in the system.</p>
             </div>
-            <a href="payments.php" class="btn">+ Encode Payment</a>
+            <a href="payments.php" class="btn"><?= icon("plus") ?> Encode Payment</a>
         </div>
 
         <div class="stats">
             <div class="stat-card">
-                <h5>TRANSACTIONS</h5>
-                <p><?= count($payments) ?></p>
+                <span class="stat-icon violet"><?= icon("receipt") ?></span>
+                <div>
+                    <h5>Transactions</h5>
+                    <p><?= count($payments) ?></p>
+                </div>
             </div>
             <div class="stat-card">
-                <h5>TOTAL COLLECTED</h5>
-                <p>₱<?= number_format($totalAmount, 2) ?></p>
+                <span class="stat-icon green"><?= icon("wallet") ?></span>
+                <div>
+                    <h5>Total Collected</h5>
+                    <p>₱<?= number_format($totalAmount, 2) ?></p>
+                </div>
             </div>
         </div>
 
         <div class="table-container">
 
             <form class="filters" method="GET">
-                <input type="text" name="search" placeholder="Search name or user code" value="<?= htmlspecialchars($search) ?>">
+                <label class="input-icon">
+                    <span class="sr-only">Search</span>
+                    <?= icon("search") ?>
+                    <input type="search" name="search" placeholder="Search name or user code" value="<?= htmlspecialchars($search) ?>">
+                </label>
 
-                <select name="method">
+                <select name="method" aria-label="Payment method">
                     <option value="">All Methods</option>
                     <option value="Cash" <?= $method === "Cash" ? "selected" : "" ?>>Cash</option>
                     <option value="GCash" <?= $method === "GCash" ? "selected" : "" ?>>GCash</option>
@@ -93,8 +105,8 @@ $totalAmount = array_sum(array_column($payments, "amount"));
                 <input type="date" name="from" value="<?= htmlspecialchars($from) ?>" title="From date">
                 <input type="date" name="to" value="<?= htmlspecialchars($to) ?>" title="To date">
 
-                <button type="submit" class="btn">Filter</button>
-                <a href="payment-records.php" class="btn btn-secondary">Reset</a>
+                <button type="submit" class="btn"><?= icon("filter") ?> Filter</button>
+                <a href="payment-records.php" class="icon-btn outlined" aria-label="Reset filters" data-tooltip="Reset filters"><?= icon("reset") ?></a>
             </form>
 
             <table>
