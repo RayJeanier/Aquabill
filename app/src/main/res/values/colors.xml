@@ -23,4 +23,12 @@
     <color name="danger_red_bg">#FDE4E4</color>
     <color name="field_bg">#F5F8FA</color>
     <color name="field_stroke">#DDE6EC</color>
+
+    <!-- Login page, same as the website (Aquabills/css/index.css) -->
+    <color name="brand_blue">#0B6FA4</color>
+    <color name="brand_teal">#12B3C7</color>
+    <color name="login_heading">#1F2937</color>
+    <color name="login_muted">#6B7280</color>
+    <color name="login_field_bg">#FAFAFA</color>
+    <color name="login_field_border">#DBE2EA</color>
 </resources>

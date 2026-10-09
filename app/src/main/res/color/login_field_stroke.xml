@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Login fields, same as the website: light gray border, brand blue when focused -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/aqua_blue" android:state_focused="true" />
-    <item android:color="@color/field_stroke" />
+    <item android:color="@color/brand_blue" android:state_focused="true" />
+    <item android:color="@color/login_field_border" />
 </selector>

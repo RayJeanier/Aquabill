@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AquaBill logo tile (Aquabills/img/favicon.svg): rounded square in the brand gradient -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient
+        android:angle="315"
+        android:endColor="@color/brand_teal"
+        android:startColor="@color/brand_blue" />
+    <corners android:radius="13dp" />
+    <stroke
+        android:width="1dp"
+        android:color="#40FFFFFF" />
+</shape>

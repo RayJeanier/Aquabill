@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sign-in loading screen, same as the website's: blue-teal diagonal with a soft glow above center -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="315"
+                android:endColor="#12B3C7"
+                android:startColor="#0B6FA4" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:centerX="0.5"
+                android:centerY="0.4"
+                android:endColor="#0012B3C7"
+                android:gradientRadius="60%p"
+                android:startColor="#24FFFFFF"
+                android:type="radial" />
+        </shape>
+    </item>
+</layer-list>
