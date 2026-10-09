@@ -127,26 +127,31 @@ include "includes/header.php";
 
         <!-- ACCOUNT -->
         <section class="card" aria-labelledby="accountTitle">
-            <h2 class="section-title" id="accountTitle">Account details</h2>
+            <h2 class="sr-only" id="accountTitle">Account details</h2>
+
+            <!-- profile header -->
+            <div class="profile-head">
+                <span class="profile-avatar" aria-hidden="true"><?= htmlspecialchars($initial) ?></span>
+                <div>
+                    <strong><?= htmlspecialchars($consumer["name"]) ?></strong>
+                    <span><?= htmlspecialchars($userCode) ?></span>
+                </div>
+            </div>
 
             <div class="list-row">
-                <span class="label">Name</span>
-                <strong><?= htmlspecialchars($consumer["name"]) ?></strong>
-            </div>
-            <div class="list-row">
-                <span class="label">User ID</span>
+                <span class="row-main"><?= row_icon("id", "blue") ?><span class="label">User ID</span></span>
                 <strong><?= htmlspecialchars($userCode) ?></strong>
             </div>
             <div class="list-row">
-                <span class="label">Username</span>
+                <span class="row-main"><?= row_icon("at", "violet") ?><span class="label">Username</span></span>
                 <strong><?= $username !== "" ? htmlspecialchars($username) : "Not set" ?></strong>
             </div>
             <div class="list-row">
-                <span class="label">Address</span>
+                <span class="row-main"><?= row_icon("pin", "teal") ?><span class="label">Address</span></span>
                 <strong><?= htmlspecialchars($consumer["address"]) ?></strong>
             </div>
             <div class="list-row">
-                <span class="label">Meter No.</span>
+                <span class="row-main"><?= row_icon("gauge", "amber") ?><span class="label">Meter No.</span></span>
                 <strong><?= htmlspecialchars($consumer["meter_no"]) ?></strong>
             </div>
 

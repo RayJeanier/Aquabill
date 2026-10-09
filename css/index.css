@@ -21,7 +21,18 @@ body{
     justify-content:center;
     padding:80px;
     position:relative;
+    overflow:hidden;
 }
+
+/* Keep the text above the waves and bubbles */
+.left > .logo,
+.left > h1,
+.left > p{
+    position:relative;
+    z-index:2;
+}
+
+/* ---------- LOGO ---------- */
 
 .logo{
     position:absolute;
@@ -29,17 +40,49 @@ body{
     left:40px;
     display:flex;
     align-items:center;
-    gap:10px;
+    gap:14px;
     font-size:24px;
     font-weight:700;
     color:white;
+    animation:drop-in .8s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.left > .logo{
+    position:absolute;
+}
+
+.logo-mark{
+    position:relative;
+    width:64px;
+    height:64px;
+    display:grid;
+    place-items:center;
 }
 
 .logo img{
-    width:100px;
-    height:100px;
-    border-radius:20px;
+    position:relative;
+    z-index:1;
+    width:64px;
+    height:64px;
+    border-radius:16px;
+    box-shadow:0 10px 25px rgba(4,47,74,0.25), 0 0 0 1px rgba(255,255,255,0.25);
+    animation:float 4s ease-in-out 1s infinite;
 }
+
+/* Rings spreading out from the logo, like a drop hitting water */
+.ripple{
+    position:absolute;
+    inset:0;
+    border-radius:20px;
+    border:2px solid rgba(255,255,255,0.55);
+    animation:ripple 3.2s ease-out 1s infinite;
+}
+
+.ripple.delay{
+    animation-delay:2.6s;
+}
+
+/* ---------- HEADING & TEXT ---------- */
 
 .left h1{
     font-size:48px;
@@ -49,11 +92,145 @@ body{
     max-width:500px;
 }
 
+.left h1 .line{
+    display:block;
+    animation:rise .8s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.left h1 .line:nth-child(1){ animation-delay:.25s; }
+.left h1 .line:nth-child(2){ animation-delay:.4s; }
+.left h1 .line:nth-child(3){ animation-delay:.55s; }
+
+/* Slow light sweep across "simplified." */
+.shine{
+    background:linear-gradient(110deg, #ffffff 35%, #b9f3ff 50%, #ffffff 65%);
+    background-size:250% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    animation:shine 4.5s ease-in-out 1.4s infinite;
+}
+
 .left p{
     font-size:16px;
     line-height:1.8;
     max-width:450px;
     opacity:0.9;
+    animation:rise-soft .9s cubic-bezier(.2,.8,.2,1) .75s both;
+}
+
+/* ---------- WAVES ---------- */
+
+/* Across the whole bottom of the page, behind both panels */
+.waves{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    height:140px;
+    pointer-events:none;
+    z-index:0;
+}
+
+.left,
+.right{
+    position:relative;
+    z-index:1;
+}
+
+.wave{
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:200%;          /* two wave periods wide, so sliding by half loops seamlessly */
+    height:100%;
+    fill:#fff;
+    animation:drift linear infinite;
+}
+
+.wave.back{   opacity:.08; animation-duration:22s; }
+.wave.middle{ opacity:.12; animation-duration:15s; animation-direction:reverse; height:85%; }
+.wave.front{  opacity:.16; animation-duration:10s; height:70%; }
+
+/* ---------- BUBBLES ---------- */
+
+.bubbles{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:1;
+}
+
+.bubbles span{
+    position:absolute;
+    bottom:-30px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.18);
+    border:1px solid rgba(255,255,255,0.3);
+    animation:bubble linear infinite;
+}
+
+.bubbles span:nth-child(1){ left:8%;  width:14px; height:14px; animation-duration:11s; animation-delay:0s;  }
+.bubbles span:nth-child(2){ left:22%; width:8px;  height:8px;  animation-duration:9s;  animation-delay:2s;  }
+.bubbles span:nth-child(3){ left:35%; width:18px; height:18px; animation-duration:14s; animation-delay:4s;  }
+.bubbles span:nth-child(4){ left:50%; width:10px; height:10px; animation-duration:10s; animation-delay:1s;  }
+.bubbles span:nth-child(5){ left:63%; width:6px;  height:6px;  animation-duration:8s;  animation-delay:5s;  }
+.bubbles span:nth-child(6){ left:74%; width:16px; height:16px; animation-duration:13s; animation-delay:3s;  }
+.bubbles span:nth-child(7){ left:86%; width:9px;  height:9px;  animation-duration:9.5s;animation-delay:6s;  }
+.bubbles span:nth-child(8){ left:94%; width:12px; height:12px; animation-duration:12s; animation-delay:7.5s;}
+
+/* ---------- KEYFRAMES ---------- */
+
+@keyframes drop-in{
+    from{ opacity:0; transform:translateY(-24px); }
+    to{   opacity:1; transform:none; }
+}
+
+@keyframes rise{
+    from{ opacity:0; transform:translateY(28px); filter:blur(4px); }
+    to{   opacity:1; transform:none; filter:none; }
+}
+
+@keyframes rise-soft{
+    from{ opacity:0; transform:translateY(16px); }
+    to{   opacity:.9; transform:none; }
+}
+
+@keyframes float{
+    0%, 100%{ transform:translateY(0); }
+    50%{      transform:translateY(-6px); }
+}
+
+@keyframes ripple{
+    0%{   transform:scale(1);   opacity:.8; }
+    100%{ transform:scale(1.9); opacity:0; }
+}
+
+@keyframes shine{
+    0%{   background-position:100% 0; }
+    60%, 100%{ background-position:0% 0; }
+}
+
+@keyframes drift{
+    from{ transform:translateX(0); }
+    to{   transform:translateX(-50%); }
+}
+
+@keyframes bubble{
+    0%{   transform:translate(0, 0);        opacity:0; }
+    10%{  opacity:1; }
+    50%{  transform:translate(12px, -50vh); }
+    90%{  opacity:.6; }
+    100%{ transform:translate(-8px, -105vh); opacity:0; }
+}
+
+/* Respect "reduce motion" in the user's device settings */
+@media (prefers-reduced-motion: reduce){
+    .logo, .logo img, .ripple, .left h1 .line, .shine, .left p, .wave, .bubbles span{
+        animation:none !important;
+    }
+    .ripple, .bubbles{ display:none; }
+    .shine{ color:#fff; background:none; }
 }
 
 /* RIGHT SIDE */
@@ -103,6 +280,11 @@ body{
     transition:0.3s;
 }
 
+.login-card input::placeholder{
+    font-size:12.5px;
+    letter-spacing:0;
+}
+
 .login-card input:focus{
     outline:none;
     border-color:#0b6fa4;
@@ -132,4 +314,216 @@ body{
     text-align:center;
     color:#6b7280;
     font-size:13px;
+}
+/* ---------- THEMED POP-UP NOTIFICATIONS (logout / login errors) ---------- */
+
+.toast-area{
+    position:fixed;
+    top:24px;
+    right:24px;
+    z-index:100;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    width:min(380px, calc(100vw - 32px));
+}
+
+.toast{
+    position:relative;
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    padding:16px 14px 18px 16px;
+    background:#fff;
+    border-radius:16px;
+    box-shadow:0 18px 45px rgba(4,47,74,0.28);
+    overflow:hidden;
+    animation:toast-in .45s cubic-bezier(.2,.9,.25,1.15) both;
+}
+
+/* gradient stripe on the left, in the site's colors */
+.toast::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    width:5px;
+    background:linear-gradient(180deg,#0b6fa4,#12b3c7);
+}
+
+.toast.error::before{
+    background:linear-gradient(180deg,#dc2626,#f87171);
+}
+
+.toast-icon{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    flex-shrink:0;
+    display:grid;
+    place-items:center;
+    background:linear-gradient(135deg,#0b6fa4,#12b3c7);
+    color:#fff;
+    box-shadow:0 6px 14px rgba(11,111,164,0.35);
+}
+
+.toast.error .toast-icon{
+    background:linear-gradient(135deg,#dc2626,#f87171);
+    box-shadow:0 6px 14px rgba(220,38,38,0.3);
+}
+
+.toast-icon svg,
+.toast-close svg{
+    width:20px;
+    height:20px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:2.4;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+.toast-text{
+    flex:1;
+    min-width:0;
+    padding-top:2px;
+}
+
+.toast-text strong{
+    display:block;
+    font-size:15px;
+    color:#111827;
+}
+
+.toast-text span{
+    display:block;
+    margin-top:3px;
+    font-size:13px;
+    line-height:1.5;
+    color:#6b7280;
+}
+
+.toast-close{
+    width:30px;
+    height:30px;
+    flex-shrink:0;
+    display:grid;
+    place-items:center;
+    border:none;
+    border-radius:8px;
+    background:none;
+    color:#9ca3af;
+    cursor:pointer;
+}
+
+.toast-close:hover{
+    background:#f3f4f6;
+    color:#374151;
+}
+
+.toast-close svg{
+    width:16px;
+    height:16px;
+}
+
+/* shrinking timer bar along the bottom */
+.toast-timer{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:3px;
+    background:linear-gradient(90deg,#0b6fa4,#12b3c7);
+    transform-origin:left;
+    animation:toast-timer var(--duration, 4000ms) linear forwards;
+}
+
+.toast.error .toast-timer{
+    background:linear-gradient(90deg,#dc2626,#f87171);
+}
+
+.toast.paused .toast-timer{
+    animation-play-state:paused;
+}
+
+.toast.leaving{
+    animation:toast-out .3s ease-in forwards;
+}
+
+@keyframes toast-in{
+    from{ opacity:0; transform:translateX(40px) scale(.96); }
+    to{   opacity:1; transform:none; }
+}
+
+@keyframes toast-out{
+    to{ opacity:0; transform:translateX(40px) scale(.96); }
+}
+
+@keyframes toast-timer{
+    from{ transform:scaleX(1); }
+    to{   transform:scaleX(0); }
+}
+
+/* phones: full width at the top */
+@media (max-width:600px){
+    .toast-area{
+        top:16px;
+        right:16px;
+        left:16px;
+        width:auto;
+    }
+}
+
+@media (prefers-reduced-motion: reduce){
+    .toast, .toast.leaving{ animation-duration:.01ms; }
+    .toast-timer{ display:none; }
+}
+
+/* ---------- PHONES & SMALL TABLETS: stack the page ---------- */
+@media (max-width:900px){
+
+    body{
+        flex-direction:column;
+        height:auto;
+        min-height:100vh;
+    }
+
+    .left{
+        flex:none;
+        padding:110px 24px 28px;
+    }
+
+    .logo{
+        top:28px;
+        left:24px;
+        font-size:22px;
+    }
+
+    .logo-mark,
+    .logo img{
+        width:52px;
+        height:52px;
+    }
+
+    .left h1{
+        font-size:32px;
+        margin-bottom:12px;
+    }
+
+    .left p{
+        font-size:14px;
+        line-height:1.7;
+    }
+
+    .right{
+        flex:none;
+        padding:0 16px 120px;
+    }
+
+    .login-card{
+        width:100%;
+        max-width:440px;
+        padding:28px 22px;
+    }
 }

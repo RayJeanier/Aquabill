@@ -59,7 +59,9 @@ include "includes/header.php";
 <div class="home-grid">
 
     <!-- CURRENT BILL -->
-    <section class="card area-bill" aria-label="Current bill">
+    <section class="card area-bill has-watermark" aria-label="Current bill">
+
+        <span class="card-watermark" aria-hidden="true"><?= $dropIcon ?></span>
 
         <div class="bill-top">
             <div class="bill-id">
@@ -124,11 +126,17 @@ include "includes/header.php";
         <div class="quick-actions">
             <a href="bills.php" class="action-tile">
                 <span class="action-icon bills"><?= nav_icon("bill") ?></span>
-                Bills
+                <span class="action-text">
+                    Bills
+                    <small>Paid &amp; unpaid</small>
+                </span>
             </a>
             <a href="service.php" class="action-tile">
                 <span class="action-icon repair"><?= nav_icon("wrench") ?></span>
-                Repair
+                <span class="action-text">
+                    Repair
+                    <small>Report a problem</small>
+                </span>
             </a>
         </div>
     </section>
@@ -137,14 +145,14 @@ include "includes/header.php";
     <section class="card area-chart" aria-labelledby="consumptionTitle">
         <div class="card-head">
             <div>
-                <h2 class="section-title" id="consumptionTitle">Consumption</h2>
+                <?= section_title("Consumption", "chart", "blue", "consumptionTitle") ?>
                 <p class="card-sub">Last <?= max(1, count($chartBills)) ?> bill<?= count($chartBills) === 1 ? "" : "s" ?></p>
             </div>
             <span class="chip">m³</span>
         </div>
 
         <?php if (!$chartBills): ?>
-            <p class="chart-empty">No meter readings yet.</p>
+            <?= empty_state("gauge", "No meter readings yet", "Your usage will show here after your first reading.") ?>
         <?php else: ?>
             <div class="chart" aria-hidden="true">
                 <div class="chart-grid">
@@ -186,17 +194,20 @@ include "includes/header.php";
 
     <!-- RECENT PAYMENTS -->
     <section class="card area-recent" aria-labelledby="recentTitle">
-        <h2 class="section-title" id="recentTitle">Recent payments</h2>
+        <?= section_title("Recent payments", "wallet", "green", "recentTitle") ?>
 
         <?php if (!$recentPayments): ?>
-            <p class="empty-text">No payments yet.</p>
+            <?= empty_state("wallet", "No payments yet", "Payments made at the water office will appear here.") ?>
         <?php endif; ?>
 
         <?php foreach ($recentPayments as $p): ?>
             <div class="list-row">
-                <div>
-                    <?= date("M d, Y", strtotime($p["payment_date"])) ?>
-                    <small><?= htmlspecialchars($p["payment_method"]) ?></small>
+                <div class="row-main">
+                    <?= row_icon("check", "green") ?>
+                    <div>
+                        <?= date("M d, Y", strtotime($p["payment_date"])) ?>
+                        <small><?= htmlspecialchars($p["payment_method"]) ?> payment</small>
+                    </div>
                 </div>
                 <span class="amount">₱<?= number_format($p["amount"], 2) ?></span>
             </div>

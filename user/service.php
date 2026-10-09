@@ -53,16 +53,19 @@ include "includes/header.php";
 
         <!-- REQUEST FORM -->
         <section class="card" aria-labelledby="formTitle">
-            <h2 class="section-title" id="formTitle">New request</h2>
+            <?= section_title("New request", "wrench", "amber", "formTitle") ?>
 
             <form class="form" method="POST" action="action/add_request.php">
 
                 <div class="field">
                     <span>Service location</span>
-                    <p class="note" style="margin-top:0">
-                        📍 <?= htmlspecialchars($location["address"] ?: "No address on file") ?>
-                        · Meter no. <?= htmlspecialchars($location["meter_no"] ?: "—") ?>
-                    </p>
+                    <div class="info-box">
+                        <?= row_icon("pin", "teal") ?>
+                        <div>
+                            <strong><?= htmlspecialchars($location["address"] ?: "No address on file") ?></strong>
+                            <small>Meter no. <?= htmlspecialchars($location["meter_no"] ?: "—") ?> · sent with your request</small>
+                        </div>
+                    </div>
                 </div>
 
                 <fieldset class="field">
@@ -98,17 +101,24 @@ include "includes/header.php";
 
         <!-- MY REQUESTS -->
         <section class="card" aria-labelledby="myRequestsTitle">
-            <h2 class="section-title" id="myRequestsTitle">My requests</h2>
+            <?= section_title("My requests", "list", "blue", "myRequestsTitle") ?>
 
             <?php if (!$requests): ?>
-                <p class="empty-text">You haven't sent any requests yet.</p>
+                <?= empty_state("wrench", "No requests yet", "Problems you report will show here with their status.") ?>
             <?php endif; ?>
 
             <?php foreach ($requests as $r): ?>
+                <?php
+                $tone = ["critical" => "red", "warning" => "amber", "good" => "green"][$requestStatusClass[$r["status"]] ?? ""] ?? "blue";
+                $icon = ["Open" => "alert", "In Progress" => "clock", "Resolved" => "check"][$r["status"]] ?? "wrench";
+                ?>
                 <div class="list-row">
-                    <div>
-                        <?= htmlspecialchars($r["request_type"]) ?>
-                        <small><?= date("M d, Y", strtotime($r["created_at"])) ?></small>
+                    <div class="row-main">
+                        <?= row_icon($icon, $tone) ?>
+                        <div>
+                            <?= htmlspecialchars($r["request_type"]) ?>
+                            <small><?= date("M d, Y", strtotime($r["created_at"])) ?></small>
+                        </div>
                     </div>
                     <span class="pill <?= $requestStatusClass[$r["status"]] ?? "neutral" ?>"><?= htmlspecialchars($r["status"]) ?></span>
                 </div>

@@ -27,17 +27,28 @@ include "includes/header.php";
     <div class="content-col">
 
         <section class="card" aria-labelledby="paymentsTitle">
-            <h2 class="section-title" id="paymentsTitle">Payments</h2>
+            <?= section_title("Payments", "wallet", "green", "paymentsTitle") ?>
 
             <?php if (!$payments): ?>
-                <p class="empty-text">No payments yet.</p>
+                <?= empty_state("wallet", "No payments yet", "Payments made at the water office will appear here.") ?>
             <?php endif; ?>
 
+            <?php $lastMonth = null; ?>
             <?php foreach ($payments as $p): ?>
+                <?php $month = date("F Y", strtotime($p["payment_date"])); ?>
+
+                <?php if ($month !== $lastMonth): ?>
+                    <p class="group-label"><?= $month ?></p>
+                    <?php $lastMonth = $month; ?>
+                <?php endif; ?>
+
                 <div class="list-row">
-                    <div>
-                        <?= date("F d, Y", strtotime($p["payment_date"])) ?>
-                        <small><?= htmlspecialchars($p["payment_method"]) ?></small>
+                    <div class="row-main">
+                        <?= row_icon("check", "green") ?>
+                        <div>
+                            <?= date("F d, Y", strtotime($p["payment_date"])) ?>
+                            <small><?= htmlspecialchars($p["payment_method"]) ?> payment · <?= date("g:i A", strtotime($p["payment_date"])) ?></small>
+                        </div>
                     </div>
                     <span class="amount">₱<?= number_format($p["amount"], 2) ?></span>
                 </div>
@@ -49,18 +60,18 @@ include "includes/header.php";
     <div class="content-col">
 
         <section class="card" aria-labelledby="totalsTitle">
-            <h2 class="section-title" id="totalsTitle">Totals</h2>
+            <?= section_title("Totals", "sigma", "violet", "totalsTitle") ?>
 
             <div class="list-row">
-                <span class="label">Payments made</span>
+                <span class="row-main"><?= row_icon("list", "blue") ?><span class="label">Payments made</span></span>
                 <strong class="amount"><?= count($payments) ?></strong>
             </div>
             <div class="list-row">
-                <span class="label">Total paid</span>
+                <span class="row-main"><?= row_icon("check", "green") ?><span class="label">Total paid</span></span>
                 <strong class="amount">₱<?= number_format($account["total_paid"], 2) ?></strong>
             </div>
             <div class="list-row">
-                <span class="label">Unpaid balance</span>
+                <span class="row-main"><?= row_icon("alert", $account["balance"] > 0 ? "amber" : "green") ?><span class="label">Unpaid balance</span></span>
                 <strong class="amount">₱<?= number_format($account["balance"], 2) ?></strong>
             </div>
 

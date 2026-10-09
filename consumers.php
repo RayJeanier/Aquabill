@@ -34,6 +34,8 @@ $activeCount = count(array_filter($consumers, fn ($c) => $c["status"] === "Activ
 <html>
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="img/logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Consumers - AquaBill</title>
 

@@ -1148,3 +1148,421 @@ textarea{
         grid-template-columns:repeat(3,1fr);
     }
 }
+
+/* =====================================================================
+   DECORATION & DETAIL (static - no animation)
+   Water-themed touches so the pages feel less plain.
+   ===================================================================== */
+
+/* ---------- Tones shared by icon tiles / row icons ---------- */
+.blue  { --tone-bg:#e3eef7; --tone-fg:#2a5f85; }
+.green { --tone-bg:#dcf5e7; --tone-fg:#15803d; }
+.amber { --tone-bg:#fdf0dc; --tone-fg:#b45309; }
+.red   { --tone-bg:#fde4e4; --tone-fg:#b42318; }
+.teal  { --tone-bg:#d9f2f5; --tone-fg:#17707c; }
+.violet{ --tone-bg:#ece8fd; --tone-fg:#6d28d9; }
+
+.row-icon,
+.title-icon,
+.tile-icon{
+    display:grid;
+    place-items:center;
+    flex-shrink:0;
+    background:var(--tone-bg, #e3eef7);
+    color:var(--tone-fg, #2a5f85);
+}
+
+.row-icon svg,
+.title-icon svg,
+.tile-icon svg,
+.empty-icon svg{
+    fill:none;
+    stroke:currentColor;
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+/* ---------- Phone header: faint drop + waves ---------- */
+.app-header{
+    position:relative;
+    overflow:hidden;
+}
+
+.app-header-text,
+.app-header-actions{
+    position:relative;
+    z-index:1;
+}
+
+.header-drop{
+    position:absolute;
+    right:-34px;
+    top:-18px;
+    width:170px;
+    height:170px;
+    opacity:.09;
+    transform:rotate(-12deg);
+    pointer-events:none;
+}
+
+.header-drop svg{
+    width:100%;
+    height:100%;
+    fill:#fff;
+}
+
+.header-waves{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:96px;
+    pointer-events:none;
+}
+
+.header-waves svg,
+.page-waves svg{
+    width:100%;
+    height:100%;
+    display:block;
+}
+
+.header-waves .w1{ fill:rgba(255,255,255,.07); }
+.header-waves .w2{ fill:rgba(255,255,255,.10); }
+
+/* ---------- Computer: background waves + drop by the title ---------- */
+.page-waves{
+    display:none;
+}
+
+.head-drop{
+    display:none;
+}
+
+/* ---------- Section titles with an icon tile ---------- */
+.section-title.with-icon{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.title-icon{
+    width:34px;
+    height:34px;
+    border-radius:10px;
+}
+
+.title-icon svg{
+    width:18px;
+    height:18px;
+}
+
+/* ---------- List rows with a leading icon ---------- */
+.row-main{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+}
+
+.row-icon{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+}
+
+.row-icon svg{
+    width:19px;
+    height:19px;
+}
+
+/* month headings in Payment History */
+.group-label{
+    margin:6px 0 2px;
+    padding-top:14px;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+}
+
+.group-label:first-of-type{
+    padding-top:0;
+    margin-top:0;
+}
+
+/* ---------- Empty states ---------- */
+.empty-state{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    padding:22px 12px;
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+}
+
+.empty-state strong{
+    color:var(--navy);
+    font-size:15px;
+}
+
+.empty-icon{
+    width:56px;
+    height:56px;
+    margin-bottom:6px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    background:var(--soft-bg);
+    color:#8aa3b7;
+}
+
+.empty-icon svg{
+    width:26px;
+    height:26px;
+}
+
+/* ---------- Faint drop watermark inside a card ---------- */
+.has-watermark{
+    position:relative;
+    overflow:hidden;
+}
+
+.has-watermark > *{
+    position:relative;
+}
+
+.card-watermark{
+    position:absolute !important;
+    right:-26px;
+    bottom:-34px;
+    width:150px;
+    height:150px;
+    opacity:.05;
+    transform:rotate(-14deg);
+    pointer-events:none;
+}
+
+.card-watermark svg{
+    width:100%;
+    height:100%;
+    fill:var(--brand);
+}
+
+.summary-tile.highlight .card-watermark{
+    opacity:.14;
+    width:110px;
+    height:110px;
+    right:-18px;
+    bottom:-26px;
+}
+
+.summary-tile.highlight .card-watermark svg{
+    fill:#fff;
+}
+
+/* ---------- Summary tile icons ---------- */
+.tile-icon{
+    width:36px;
+    height:36px;
+    border-radius:11px;
+    margin-bottom:10px;
+}
+
+.tile-icon svg{
+    width:19px;
+    height:19px;
+}
+
+/* keep the blue tile visible where it overlaps the blue phone header */
+.summary-tile.highlight{
+    box-shadow:0 0 0 1px rgba(255,255,255,.35), 0 12px 28px rgba(19,40,60,.18);
+}
+
+.summary-tile.highlight .tile-icon{
+    background:rgba(255,255,255,.2);
+    color:#fff;
+}
+
+/* ---------- Quick actions: label + hint ---------- */
+.action-text{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+}
+
+.action-text small{
+    font-size:12px;
+    font-weight:500;
+    color:var(--muted);
+}
+
+/* ---------- Chart bars: soft gradient ---------- */
+.bar{
+    background:linear-gradient(180deg,#bfe0f2,#94c6e3);
+}
+
+.chart-col.latest .bar{
+    background:linear-gradient(180deg,#2d9bd6,#2a5f85);
+}
+
+/* ---------- Info box (service location) ---------- */
+.info-box{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 14px;
+    border:1px solid var(--soft-border);
+    border-radius:14px;
+    background:var(--soft-bg);
+}
+
+.info-box strong{
+    display:block;
+    font-size:15px;
+    color:var(--navy);
+}
+
+.info-box small{
+    display:block;
+    margin-top:2px;
+    font-size:12px;
+    font-weight:500;
+    color:var(--muted);
+}
+
+/* ---------- Numbered steps (How billing works) ---------- */
+.steps{
+    list-style:none;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.steps li{
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    font-size:14px;
+    line-height:1.5;
+    color:var(--muted);
+}
+
+.steps strong{
+    color:var(--navy);
+}
+
+.step-num{
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    flex-shrink:0;
+    display:grid;
+    place-items:center;
+    background:var(--brand-gradient);
+    color:#fff;
+    font-size:13px;
+    font-weight:700;
+}
+
+/* ---------- Settings: profile header ---------- */
+.profile-head{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin:-4px -4px 16px;
+    padding:16px;
+    border-radius:18px;
+    background:var(--brand-gradient);
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+}
+
+.profile-head::after{
+    /* faint drop in the corner */
+    content:"";
+    position:absolute;
+    right:-16px;
+    bottom:-28px;
+    width:100px;
+    height:100px;
+    opacity:.15;
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M12 2.5c-.3 0-.6.15-.78.4C9.6 5.1 5.5 10.9 5.5 14.5a6.5 6.5 0 0 0 13 0c0-3.6-4.1-9.4-5.72-11.6A.97.97 0 0 0 12 2.5Z'/%3E%3C/svg%3E") no-repeat center / contain;
+    transform:rotate(-14deg);
+}
+
+.profile-avatar{
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    background:rgba(255,255,255,.2);
+    border:2px solid rgba(255,255,255,.5);
+    font-size:20px;
+    font-weight:800;
+    flex-shrink:0;
+}
+
+.profile-head strong{
+    display:block;
+    font-size:17px;
+}
+
+.profile-head span{
+    font-size:13px;
+    opacity:.85;
+}
+
+/* ---------- Computer-only decoration ---------- */
+@media (min-width:900px){
+
+    .page-waves{
+        display:block;
+        position:fixed;
+        left:0;
+        right:0;
+        bottom:0;
+        height:170px;
+        z-index:-1;
+        pointer-events:none;
+    }
+
+    .page-waves .w1{ fill:rgba(255,255,255,.22); }
+    .page-waves .w2{ fill:rgba(255,255,255,.32); }
+
+    .page-head{
+        position:relative;
+    }
+
+    .head-drop{
+        display:block;
+        position:absolute;
+        right:10px;
+        top:-26px;
+        width:150px;
+        height:150px;
+        opacity:.16;
+        transform:rotate(-14deg);
+        pointer-events:none;
+    }
+
+    .head-drop svg{
+        width:100%;
+        height:100%;
+        fill:#fff;
+    }
+
+    .brand-logo{
+        width:42px;
+        height:42px;
+        border-radius:13px;
+        box-shadow:0 6px 16px rgba(42,95,133,0.2);
+    }
+}

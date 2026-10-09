@@ -18,15 +18,19 @@ include "includes/header.php";
 
         <!-- BALANCE SUMMARY -->
         <div class="summary">
-            <div class="summary-tile highlight">
+            <div class="summary-tile highlight has-watermark">
+                <span class="card-watermark" aria-hidden="true"><?= $dropIcon ?></span>
+                <span class="tile-icon"><?= nav_icon("wallet") ?></span>
                 <span class="stat-label">Unpaid balance</span>
                 <span class="stat-value">₱<?= number_format($account["balance"], 2) ?></span>
             </div>
             <div class="summary-tile">
+                <span class="tile-icon green"><?= nav_icon("check") ?></span>
                 <span class="stat-label">Total paid</span>
                 <span class="stat-value">₱<?= number_format($account["total_paid"], 2) ?></span>
             </div>
             <div class="summary-tile">
+                <span class="tile-icon amber"><?= nav_icon("bill") ?></span>
                 <span class="stat-label">Unpaid bills</span>
                 <span class="stat-value"><?= count($account["unpaid_bills"]) ?></span>
             </div>
@@ -34,20 +38,27 @@ include "includes/header.php";
 
         <!-- BILL LIST -->
         <section class="card" aria-labelledby="billsTitle">
-            <h2 class="section-title" id="billsTitle">All bills</h2>
+            <?= section_title("All bills", "list", "blue", "billsTitle") ?>
 
             <?php if (!$account["bills"]): ?>
-                <p class="empty-text">No bills yet. Your first bill will appear after your meter is read.</p>
+                <?= empty_state("bill", "No bills yet", "Your first bill will appear after your meter is read.") ?>
             <?php endif; ?>
 
             <?php foreach ($account["bills"] as $b): ?>
+                <?php [$statusIcon, $statusTone] = bill_status_icon($b["status"]); ?>
                 <div class="list-row">
-                    <div>
-                        <?= $b["period"] ?>
-                        <small>
-                            <?= format_number($b["usage"]) ?> m³ ·
-                            <?= $b["unpaid"] > 0 ? "Due " . $b["due_on"]->format("M d, Y") : "Read " . $b["read_on"]->format("M d, Y") ?>
-                        </small>
+                    <div class="row-main">
+                        <?= row_icon($statusIcon, $statusTone) ?>
+                        <div>
+                            <?= $b["period"] ?>
+                            <small>
+                                <?= format_number($b["usage"]) ?> m³ ·
+                                <?= $b["unpaid"] > 0 ? "Due " . $b["due_on"]->format("M d, Y") : "Read " . $b["read_on"]->format("M d, Y") ?>
+                                <?php if ($b["paid"] > 0 && $b["unpaid"] > 0): ?>
+                                    · ₱<?= number_format($b["paid"], 2) ?> paid
+                                <?php endif; ?>
+                            </small>
+                        </div>
                     </div>
                     <div class="row-end">
                         <span class="amount">₱<?= number_format($b["amount"], 2) ?></span>
@@ -65,9 +76,9 @@ include "includes/header.php";
 
         <!-- BALANCE STATUS -->
         <section class="card" aria-labelledby="statusTitle">
-            <h2 class="section-title" id="statusTitle">
-                <?= $account["balance"] > 0 ? "Unpaid balance" : "All paid up" ?>
-            </h2>
+            <?= $account["balance"] > 0
+                ? section_title("Unpaid balance", "alert", "amber", "statusTitle")
+                : section_title("All paid up", "check", "green", "statusTitle") ?>
 
             <?php if ($account["balance"] > 0): ?>
                 <p class="empty-text">
@@ -88,12 +99,22 @@ include "includes/header.php";
         </section>
 
         <section class="card" aria-labelledby="howTitle">
-            <h2 class="section-title" id="howTitle">How billing works</h2>
-            <p class="empty-text">
-                A new bill is made each time your meter is read. Bills are due
-                <?= (int) get_pricing()["due_days"] ?> days after the reading.
-                Payments are applied to your oldest unpaid bill first.
-            </p>
+            <?= section_title("How billing works", "info", "teal", "howTitle") ?>
+
+            <ol class="steps">
+                <li>
+                    <span class="step-num">1</span>
+                    <span><strong>Your meter is read</strong> and a new bill is made for that month.</span>
+                </li>
+                <li>
+                    <span class="step-num">2</span>
+                    <span><strong>Pay within <?= (int) get_pricing()["due_days"] ?> days</strong> of the reading at the San Vicente water office.</span>
+                </li>
+                <li>
+                    <span class="step-num">3</span>
+                    <span><strong>Payments go to your oldest bill first</strong>, then to newer ones.</span>
+                </li>
+            </ol>
         </section>
 
     </div>

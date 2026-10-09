@@ -2,6 +2,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="img/logo.png">
     <title>AquaBill Admin Login</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -10,17 +12,42 @@
 
 <body>
 
+    <!-- drifting waves across the bottom of the page (decoration) -->
+    <div class="waves" aria-hidden="true">
+        <svg class="wave back" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path d="M0 60 Q 180 20 360 60 T 720 60 T 1080 60 T 1440 60 V120 H0 Z"/>
+        </svg>
+        <svg class="wave middle" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path d="M0 70 Q 180 35 360 70 T 720 70 T 1080 70 T 1440 70 V120 H0 Z"/>
+        </svg>
+        <svg class="wave front" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path d="M0 80 Q 180 55 360 80 T 720 80 T 1080 80 T 1440 80 V120 H0 Z"/>
+        </svg>
+    </div>
+
     <!-- LEFT PANEL -->
 
     <div class="left">
 
+        <!-- rising bubbles (decoration) -->
+        <div class="bubbles" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+        </div>
+
         <div class="logo">
-            <img src="img/Untitled design (1).png" alt="AquaBill Logo">
+            <span class="logo-mark">
+                <span class="ripple" aria-hidden="true"></span>
+                <span class="ripple delay" aria-hidden="true"></span>
+                <img src="img/favicon.svg" alt="AquaBill Logo">
+            </span>
             <span>AquaBill</span>
         </div>
 
         <h1>
-            San Vicente's Modern water billing, simplified.
+            <span class="line">San Vicente's</span>
+            <span class="line">Modern water billing,</span>
+            <span class="line"><span class="shine">simplified.</span></span>
         </h1>
 
         <p>
@@ -76,18 +103,64 @@
         </div>
 
     </div>
+    <!-- Themed pop-up notifications (logout / login errors) -->
+    <div class="toast-area" id="toastArea" aria-live="polite"></div>
+
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const logout = urlParams.get("logout");
-
     const error = urlParams.get("error");
 
+    const toastIcons = {
+        success: '<path d="M20 6 9 17l-5-5"/>',
+        error:   '<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>'
+    };
+
+    // Shows a themed pop-up that closes itself after `duration` ms (or with the X button)
+    function showToast(type, title, message, duration = 4000) {
+        const toast = document.createElement("div");
+        toast.className = "toast " + type;
+        toast.setAttribute("role", type === "error" ? "alert" : "status");
+        toast.style.setProperty("--duration", duration + "ms");
+
+        toast.innerHTML =
+            '<span class="toast-icon"><svg viewBox="0 0 24 24" aria-hidden="true">' + toastIcons[type] + '</svg></span>' +
+            '<div class="toast-text"><strong></strong><span></span></div>' +
+            '<button type="button" class="toast-close" aria-label="Close">' +
+                '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>' +
+            '</button>' +
+            '<span class="toast-timer" aria-hidden="true"></span>';
+
+        // textContent, so a message from the URL can never inject HTML
+        toast.querySelector("strong").textContent = title;
+        toast.querySelector(".toast-text span").textContent = message;
+
+        const close = () => {
+            toast.classList.add("leaving");
+            toast.addEventListener("animationend", () => toast.remove(), { once: true });
+        };
+
+        toast.querySelector(".toast-close").addEventListener("click", close);
+        const timer = setTimeout(close, duration);
+
+        // Pause while the mouse is over it, so it can be read
+        toast.addEventListener("mouseenter", () => { clearTimeout(timer); toast.classList.add("paused"); });
+        toast.addEventListener("mouseleave", () => setTimeout(close, 1500));
+
+        document.getElementById("toastArea").appendChild(toast);
+    }
+
     if (logout === "success") {
-        alert("You have successfully logged out!");
+        showToast("success", "Logged out", "You have successfully logged out. See you again!");
     }
 
     if (error) {
-        alert(error);
+        showToast("error", "Couldn't sign you in", error, 6000);
+    }
+
+    // Remove ?logout / ?error from the address bar so a refresh doesn't show it again
+    if (logout || error) {
+        history.replaceState(null, "", window.location.pathname);
     }
 </script>
 </body>

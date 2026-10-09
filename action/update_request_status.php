@@ -20,7 +20,11 @@ try {
     $stmt = $pdo->prepare("UPDATE maintenance_requests SET status = :status WHERE id = :id");
     $stmt->execute([":status" => $status, ":id" => $id]);
 
-    header("Location: ../maintenance.php?updated=1");
+    // Return to the same filtered view (only the known filter keys are kept)
+    parse_str($_POST["back"] ?? "", $back);
+    $back = array_filter(array_intersect_key($back, ["status" => "", "type" => ""]), "is_string");
+
+    header("Location: ../maintenance.php?" . http_build_query($back + ["updated" => 1]));
     exit;
 
 } catch (PDOException $e) {

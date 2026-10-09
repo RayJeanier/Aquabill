@@ -116,6 +116,16 @@ function status_class(string $status): string
     };
 }
 
+// Icon + color tone for a bill row, matching its status pill
+function bill_status_icon(string $status): array
+{
+    return match ($status) {
+        "Paid"    => ["check", "green"],
+        "Overdue" => ["alert", "red"],
+        default   => ["clock", "amber"],
+    };
+}
+
 // 12.50 -> "12.5", 300.00 -> "300"
 function format_number(string|float $value): string
 {

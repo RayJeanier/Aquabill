@@ -628,6 +628,11 @@ textarea::placeholder{
     flex:0 0 220px;
 }
 
+.filters.compact > .icon-btn,
+.filters.compact > .btn{
+    flex:0 0 auto;
+}
+
 /* ===================== PANELS & CARDS ===================== */
 
 .panel{

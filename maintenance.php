@@ -12,30 +12,86 @@ const STATUS_ICONS = [
     "Resolved"    => ["check-circle", "green"],
 ];
 
-$filter = $_GET["status"] ?? "";
+// Problem types in the order they appear on the request forms (admin + consumer).
+// Any other type found in the database is added after these.
+const KNOWN_REQUEST_TYPES = [
+    "Leak Report",
+    "Meter Issue",
+    "No Water",
+    "Low Water Pressure",
+    "Water Quality",
+    "Billing Concern",
+    "Other",
+];
 
-if (in_array($filter, REQUEST_STATUSES, true)) {
-    $stmt = $pdo->prepare("SELECT * FROM maintenance_requests WHERE status = :status ORDER BY created_at DESC");
-    $stmt->execute([":status" => $filter]);
-} else {
-    $filter = "";
-    $stmt = $pdo->query("SELECT * FROM maintenance_requests ORDER BY created_at DESC");
+/* How many requests of each problem type exist (for the dropdown) */
+$typeCounts = [];
+foreach ($pdo->query("SELECT request_type, COUNT(*) AS total FROM maintenance_requests GROUP BY request_type") as $row) {
+    $typeCounts[$row["request_type"]] = (int) $row["total"];
 }
 
+// Every problem type from the forms (even with 0 requests), then any others found in the database
+$requestTypes = array_values(array_unique(array_merge(KNOWN_REQUEST_TYPES, array_keys($typeCounts))));
+
+/* Active filters */
+$filter     = $_GET["status"] ?? "";
+$typeFilter = $_GET["type"] ?? "";
+
+if (!in_array($filter, REQUEST_STATUSES, true)) {
+    $filter = "";
+}
+
+if (!in_array($typeFilter, $requestTypes, true)) {
+    $typeFilter = "";
+}
+
+/* Requests matching both filters */
+$where  = [];
+$params = [];
+
+if ($filter !== "") {
+    $where[] = "status = :status";
+    $params[":status"] = $filter;
+}
+
+if ($typeFilter !== "") {
+    $where[] = "request_type = :type";
+    $params[":type"] = $typeFilter;
+}
+
+$stmt = $pdo->prepare(
+    "SELECT * FROM maintenance_requests"
+    . ($where ? " WHERE " . implode(" AND ", $where) : "")
+    . " ORDER BY created_at DESC"
+);
+$stmt->execute($params);
 $requests = $stmt->fetchAll();
 
+/* Status cards: follow the problem filter, so you see e.g. how many leak reports are open */
 $counts = array_fill_keys(REQUEST_STATUSES, 0);
 
-foreach ($pdo->query("SELECT status, COUNT(*) AS total FROM maintenance_requests GROUP BY status") as $row) {
+$stmt = $pdo->prepare(
+    "SELECT status, COUNT(*) AS total FROM maintenance_requests"
+    . ($typeFilter !== "" ? " WHERE request_type = :type" : "")
+    . " GROUP BY status"
+);
+$stmt->execute($typeFilter !== "" ? [":type" => $typeFilter] : []);
+
+foreach ($stmt as $row) {
     if (isset($counts[$row["status"]])) {
         $counts[$row["status"]] = (int) $row["total"];
     }
 }
+
+// Current filters as a query string, so changing a status brings you back to the same view
+$activeFilters = http_build_query(array_filter(["status" => $filter, "type" => $typeFilter]));
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="img/logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Maintenance - AquaBill</title>
 
@@ -85,10 +141,32 @@ foreach ($pdo->query("SELECT status, COUNT(*) AS total FROM maintenance_requests
                     <option value="<?= $status ?>" <?= $filter === $status ? "selected" : "" ?>><?= $status ?></option>
                 <?php endforeach; ?>
             </select>
+
+            <select name="type" onchange="this.form.submit()" aria-label="Filter by problem">
+                <option value="">All problems</option>
+                <?php foreach ($requestTypes as $type): ?>
+                    <option value="<?= htmlspecialchars($type) ?>" <?= $typeFilter === $type ? "selected" : "" ?>>
+                        <?= htmlspecialchars($type) ?> (<?= $typeCounts[$type] ?? 0 ?>)
+                    </option>
+                <?php endforeach; ?>
+            </select>
+
+            <?php if ($filter !== "" || $typeFilter !== ""): ?>
+                <a href="maintenance.php" class="icon-btn outlined" aria-label="Clear filters" data-tooltip="Clear filters"><?= icon("reset") ?></a>
+            <?php endif; ?>
         </form>
 
         <?php if (!$requests): ?>
-            <div class="table-container"><p class="empty">No maintenance requests found.</p></div>
+            <div class="table-container">
+                <p class="empty">
+                    <?php if ($filter !== "" || $typeFilter !== ""): ?>
+                        No <?= htmlspecialchars(strtolower(trim($filter . " " . $typeFilter))) ?> requests found.
+                        <a href="maintenance.php" class="panel-link">Show all requests</a>
+                    <?php else: ?>
+                        No maintenance requests found.
+                    <?php endif; ?>
+                </p>
+            </div>
         <?php endif; ?>
 
         <div class="request-grid">
@@ -120,6 +198,7 @@ foreach ($pdo->query("SELECT status, COUNT(*) AS total FROM maintenance_requests
 
                             <form class="dropdown-menu" method="POST" action="action/update_request_status.php">
                                 <input type="hidden" name="id" value="<?= (int) $row["id"] ?>">
+                                <input type="hidden" name="back" value="<?= htmlspecialchars($activeFilters) ?>">
                                 <div class="dropdown-label">Set status</div>
                                 <?php foreach (REQUEST_STATUSES as $status): ?>
                                     <button type="submit" name="status" value="<?= $status ?>"
