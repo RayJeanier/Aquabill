@@ -3,10 +3,12 @@ package com.example.aquabill
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -14,6 +16,7 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.jan.supabase.postgrest.from
@@ -78,15 +81,33 @@ class PlumberHomeFragment : Fragment(R.layout.fragment_plumber_home) {
 
     private fun renderCounts() {
         val root = requireView()
-        root.findViewById<TextView>(R.id.tvCountOpen).text = requests.count { it.status == "Open" }.toString()
-        root.findViewById<TextView>(R.id.tvCountInProgress).text = requests.count { it.status == "In Progress" }.toString()
-        root.findViewById<TextView>(R.id.tvCountResolved).text = requests.count { it.status == "Resolved" }.toString()
+        fun count(status: String) = requests.count { (it.status ?: "Open") == status }
+
+        root.showCount(R.id.countOpen, "Open", count("Open"), R.drawable.ic_inbox, R.color.danger_red, R.color.danger_red_bg)
+        root.showCount(R.id.countInProgress, "In Progress", count("In Progress"), R.drawable.ic_schedule,
+            R.color.warning_orange, R.color.warning_orange_bg)
+        root.showCount(R.id.countDone, "Done", count("Resolved"), R.drawable.ic_check_circle,
+            R.color.success_green, R.color.success_green_bg)
+        root.showCount(R.id.countTotal, "Total", requests.size, R.drawable.ic_list_all, R.color.aqua_navy, R.color.tile_pay_bg)
+    }
+
+    // Fills one layout_status_count card
+    private fun View.showCount(cardId: Int, label: String, count: Int, icon: Int, color: Int, background: Int) {
+        val card = findViewById<View>(cardId)
+        card.findViewById<TextView>(R.id.countValue).text = count.toString()
+        card.findViewById<TextView>(R.id.countLabel).text = label
+        card.findViewById<View>(R.id.countIconTile).backgroundTintList =
+            ContextCompat.getColorStateList(context, background)
+        card.findViewById<ImageView>(R.id.countIcon).apply {
+            setImageResource(icon)
+            imageTintList = ContextCompat.getColorStateList(context, color)
+        }
     }
 
     private fun selectedStatus(): String? = when (chipFilter.checkedChipId) {
         R.id.chipOpen -> "Open"
         R.id.chipInProgress -> "In Progress"
-        R.id.chipResolved -> "Resolved"
+        R.id.chipDone -> "Resolved"
         else -> null // All
     }
 
@@ -112,18 +133,29 @@ class PlumberHomeFragment : Fragment(R.layout.fragment_plumber_home) {
             item.findViewById<TextView>(R.id.tvRequestDescription).text = request.description.orEmpty()
             item.findViewById<TextView>(R.id.tvRequestDate).text =
                 formatDate(request.created_at, "MMMM dd, yyyy")
-            item.findViewById<TextView>(R.id.tvRequestStatus).showRequestStatus(request.status)
-            item.findViewById<View>(R.id.btnChangeStatus).setOnClickListener { pickStatus(request) }
+            item.findViewById<MaterialButton>(R.id.btnStatus).apply {
+                showStatus(request.status)
+                setOnClickListener { pickStatus(request) }
+            }
             requestList.addView(item)
         }
         tvEmpty.isVisible = shown.isEmpty()
     }
 
+    // The status dropdown: the current status, in its color
+    private fun MaterialButton.showStatus(status: String?) {
+        val (color, background) = requestStatusColors(status)
+        text = requestStatusLabel(status)
+        setTextColor(ContextCompat.getColor(context, color))
+        iconTint = ContextCompat.getColorStateList(context, color)
+        backgroundTintList = ContextCompat.getColorStateList(context, background)
+    }
+
     private fun pickStatus(request: MaintenanceRequest) {
-        val current = REQUEST_STATUSES.indexOf(request.status)
+        val current = REQUEST_STATUSES.indexOf(request.status ?: "Open")
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Change status")
-            .setSingleChoiceItems(REQUEST_STATUSES.toTypedArray(), current) { dialog, which ->
+            .setTitle("Set status")
+            .setSingleChoiceItems(REQUEST_STATUSES.map(::requestStatusLabel).toTypedArray(), current) { dialog, which ->
                 dialog.dismiss()
                 val newStatus = REQUEST_STATUSES[which]
                 if (newStatus != request.status) updateStatus(request, newStatus)
@@ -150,7 +182,7 @@ class PlumberHomeFragment : Fragment(R.layout.fragment_plumber_home) {
                     Toast.makeText(requireContext(), "Couldn't update: not allowed by Supabase", Toast.LENGTH_LONG).show()
                     return@launch
                 }
-                Toast.makeText(requireContext(), "Request status updated.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Marked as ${requestStatusLabel(newStatus)}", Toast.LENGTH_SHORT).show()
                 loadRequests()
 
             } catch (e: Exception) {

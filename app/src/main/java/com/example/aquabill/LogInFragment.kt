@@ -51,17 +51,21 @@ class LogInFragment : Fragment(R.layout.fragment_log_in) {
 
             try {
 
-                val users = supabase
+                // Log in with the account number (user code) or the username. Anything with
+                // characters neither can contain is turned away before it reaches the query.
+                val matchedUser = if (!LOGIN_ID.matches(user_id)) null else supabase
                     .from("users")
                     .select {
                         filter {
-                            eq("user_code", user_id)
+                            or {
+                                eq("user_code", user_id.uppercase())
+                                eq("username", user_id.lowercase()) // usernames are saved in lowercase
+                            }
                             eq("password", password)
                         }
                     }
                     .decodeList<User>()
-
-                val matchedUser = users.firstOrNull()
+                    .firstOrNull()
 
                 if (matchedUser != null) {
 
@@ -133,6 +137,11 @@ class LogInFragment : Fragment(R.layout.fragment_log_in) {
                 ).show()
             }
         }
+    }
+
+    private companion object {
+        // User codes look like SVOB-CONS-37E7C1; usernames are letters, digits, . _ - @
+        val LOGIN_ID = Regex("""[A-Za-z0-9._@-]+""")
     }
 }
 

@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/aqua_bg"
+    android:orientation="vertical"
+    tools:context=".MeterReadingFragment">
+
+    <include layout="@layout/layout_screen_header" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="32dp"
+            android:visibility="invisible"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- Consumer -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/divider"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:id="@+id/tvConsumerName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_primary"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            tools:text="Rayden Sabino" />
+
+                        <TextView
+                            android:id="@+id/tvUserCode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp"
+                            tools:text="SVOB-CONS-37E7C1" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/bg_rounded_12"
+                            android:backgroundTint="@color/tile_pay_bg"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:padding="12dp">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:importantForAccessibility="no"
+                                android:src="@drawable/ic_location"
+                                app:tint="@color/aqua_navy" />
+
+                            <TextView
+                                android:id="@+id/tvLocation"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:textColor="@color/aqua_navy"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                tools:text="San Vicente · Meter no. 11111" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- New reading / update this month's reading -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/divider"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:id="@+id/tvFormTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            tools:text="New reading" />
+
+                        <TextView
+                            android:id="@+id/tvFormNote"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp"
+                            tools:text="Type the number on the meter, or scan it with the camera." />
+
+                        <!-- Last reading, which this one is measured from -->
+                        <LinearLayout
+                            android:id="@+id/previousBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:background="@drawable/bg_rounded_12"
+                            android:backgroundTint="@color/field_bg"
+                            android:orientation="horizontal"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Previous reading"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:id="@+id/tvPrevious"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                tools:text="450 m³" />
+                        </LinearLayout>
+
+                        <!-- Only for a consumer's very first reading -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tilPrevious"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:hint="Starting meter reading (m³)"
+                            android:visibility="gone"
+                            app:helperText="First reading for this consumer"
+                            app:boxBackgroundMode="outline">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etPrevious"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="numberDecimal" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:gravity="top"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/tilCurrent"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:hint="Current reading (m³)"
+                                app:boxBackgroundMode="outline">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/etCurrent"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:imeOptions="actionDone"
+                                    android:inputType="numberDecimal" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <!-- Read the number off the meter with the camera -->
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnScanMeter"
+                                style="@style/Widget.Material3.Button.TonalButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="60dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="6dp"
+                                android:contentDescription="Scan meter"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:minWidth="0dp"
+                                android:paddingStart="16dp"
+                                android:paddingEnd="16dp"
+                                android:text="Scan"
+                                android:textAllCaps="false"
+                                android:textColor="@color/aqua_navy"
+                                app:backgroundTint="@color/tile_pay_bg"
+                                app:cornerRadius="12dp"
+                                app:icon="@drawable/ic_camera"
+                                app:iconTint="@color/aqua_navy" />
+                        </LinearLayout>
+
+                        <!-- Live usage and bill, worked out from the previous reading -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_rounded_12"
+                                android:backgroundTint="@color/tile_bills_bg"
+                                android:orientation="vertical"
+                                android:padding="12dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:letterSpacing="0.08"
+                                    android:text="USAGE"
+                                    android:textColor="@color/tile_bills_icon"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvUsagePreview"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:text="—"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold"
+                                    tools:text="12 m³" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_rounded_12"
+                                android:backgroundTint="@color/tile_pay_bg"
+                                android:orientation="vertical"
+                                android:padding="12dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:letterSpacing="0.08"
+                                    android:text="AMOUNT"
+                                    android:textColor="@color/aqua_navy"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvAmountPreview"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:text="—"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold"
+                                    tools:text="₱136.00" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnSaveReading"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:layout_marginTop="16dp"
+                            android:backgroundTint="@color/aqua_navy"
+                            android:text="Save reading"
+                            android:textAllCaps="false"
+                            app:cornerRadius="14dp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="Previous readings"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvNoReadings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:text="No readings yet."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:id="@+id/readingList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="48dp" />
+    </FrameLayout>
+</LinearLayout>

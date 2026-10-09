@@ -54,6 +54,13 @@ dependencies {
     // Pull-to-refresh
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
+    // Meter reader: QR scanner and reading numbers off the meter photo
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation("com.google.mlkit:text-recognition:16.0.1")
+    implementation("androidx.camera:camera-camera2:1.4.2")
+    implementation("androidx.camera:camera-lifecycle:1.4.2")
+    implementation("androidx.camera:camera-view:1.4.2")
+
     // Supabase
     implementation(platform("io.github.jan-tennert.supabase:bom:3.6.0"))
     implementation("io.github.jan-tennert.supabase:postgrest-kt")

@@ -9,6 +9,12 @@ data class Consumer(
     val address: String? = null,
     val meter_no: String? = null
 ) {
+    // "San Vicente · Meter no. 11111"
+    fun locationText(): String = listOf(
+        address?.takeIf { it.isNotBlank() } ?: "No address on file",
+        "Meter no. ${meter_no?.takeIf { it.isNotBlank() } ?: "—"}"
+    ).joinToString(" · ")
+
     companion object {
         suspend fun load(userCode: String): Consumer? = supabase
             .from("consumers")

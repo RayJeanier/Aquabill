@@ -56,18 +56,26 @@ fun Fragment.setupScreenHeader(root: View, title: String) {
     }
 }
 
-// Maintenance request statuses, same as the web admin (Aquabills/maintenance.php)
+// Maintenance request statuses as stored in the database, same as the web admin (Aquabills/maintenance.php)
 val REQUEST_STATUSES = listOf("Open", "In Progress", "Resolved")
 
-// Same colors as the web: Open red, In Progress orange, Resolved green
+// The app calls "Resolved" "Done"; the database (and the web) keep "Resolved"
+fun requestStatusLabel(status: String?): String = when (status ?: "Open") {
+    "Resolved" -> "Done"
+    else -> status ?: "Open"
+}
+
+// Text and background colors, same as the web: Open red, In Progress orange, Done green
+fun requestStatusColors(status: String?): Pair<Int, Int> = when (status ?: "Open") {
+    "Open" -> R.color.danger_red to R.color.danger_red_bg
+    "In Progress" -> R.color.warning_orange to R.color.warning_orange_bg
+    "Resolved" -> R.color.success_green to R.color.success_green_bg
+    else -> R.color.text_secondary to R.color.divider
+}
+
 fun TextView.showRequestStatus(status: String?) {
-    val label = status ?: "Open"
-    when (label) {
-        "Open" -> showStatusBadge(label, R.color.danger_red, R.color.danger_red_bg)
-        "In Progress" -> showStatusBadge(label, R.color.warning_orange, R.color.warning_orange_bg)
-        "Resolved" -> showStatusBadge(label, R.color.success_green, R.color.success_green_bg)
-        else -> showStatusBadge(label, R.color.text_secondary, R.color.divider)
-    }
+    val (text, background) = requestStatusColors(status)
+    showStatusBadge(requestStatusLabel(status), text, background)
 }
 
 fun greetingForNow(): String {

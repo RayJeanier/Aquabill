@@ -91,126 +91,50 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
-                <!-- Counts per status -->
+                <!-- Counts per status, 2 x 2 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <com.google.android.material.card.MaterialCardView
+                    <include
+                        android:id="@+id/countOpen"
+                        layout="@layout/layout_status_count"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="6dp"
-                        android:layout_weight="1"
-                        app:cardBackgroundColor="@color/white"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/divider"
-                        app:strokeWidth="1dp">
+                        android:layout_weight="1" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="14dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:letterSpacing="0.08"
-                                android:text="OPEN"
-                                android:textColor="@color/danger_red"
-                                android:textSize="10sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvCountOpen"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="0"
-                                android:textColor="@color/text_primary"
-                                android:textSize="24sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
+                    <include
+                        android:id="@+id/countInProgress"
+                        layout="@layout/layout_status_count"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <include
+                        android:id="@+id/countDone"
+                        layout="@layout/layout_status_count"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginEnd="6dp"
-                        android:layout_weight="1"
-                        app:cardBackgroundColor="@color/white"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/divider"
-                        app:strokeWidth="1dp">
+                        android:layout_weight="1" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="14dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:letterSpacing="0.08"
-                                android:text="IN PROGRESS"
-                                android:textColor="@color/warning_orange"
-                                android:textSize="10sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvCountInProgress"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="0"
-                                android:textColor="@color/text_primary"
-                                android:textSize="24sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
+                    <include
+                        android:id="@+id/countTotal"
+                        layout="@layout/layout_status_count"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
-                        android:layout_weight="1"
-                        app:cardBackgroundColor="@color/white"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/divider"
-                        app:strokeWidth="1dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="14dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:letterSpacing="0.08"
-                                android:text="RESOLVED"
-                                android:textColor="@color/success_green"
-                                android:textSize="10sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvCountResolved"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="0"
-                                android:textColor="@color/text_primary"
-                                android:textSize="24sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
+                        android:layout_weight="1" />
                 </LinearLayout>
 
                 <!-- Filter by status -->
@@ -245,11 +169,11 @@
                         android:text="In Progress" />
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/chipResolved"
+                        android:id="@+id/chipDone"
                         style="@style/Widget.Material3.Chip.Filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Resolved" />
+                        android:text="Done" />
                 </com.google.android.material.chip.ChipGroup>
 
                 <ProgressBar

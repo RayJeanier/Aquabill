@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="12dp"
+    android:clickable="true"
+    android:focusable="true"
     app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="18dp"
     app:cardElevation="0dp"
@@ -27,15 +29,15 @@
                 android:layout_width="38dp"
                 android:layout_height="38dp"
                 android:background="@drawable/bg_rounded_12"
-                android:backgroundTint="@color/tile_repair_bg">
+                android:backgroundTint="@color/tile_bills_bg">
 
                 <ImageView
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_gravity="center"
                     android:importantForAccessibility="no"
-                    android:src="@drawable/ic_wrench"
-                    app:tint="@color/warning_orange" />
+                    android:src="@drawable/ic_drop"
+                    app:tint="@color/tile_bills_icon" />
             </FrameLayout>
 
             <LinearLayout
@@ -46,26 +48,38 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tvRequestType"
+                    android:id="@+id/tvConsumerName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_primary"
                     android:textSize="15sp"
                     android:textStyle="bold"
-                    tools:text="Leak Report" />
+                    tools:text="Rayden Sabino" />
 
                 <TextView
-                    android:id="@+id/tvConsumer"
+                    android:id="@+id/tvUserCode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp"
-                    tools:text="Rayden Sabino · SVOB-CONS-37E7C1" />
+                    tools:text="SVOB-CONS-37E7C1" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvReadStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill"
+                android:paddingStart="10dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="2dp"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                tools:text="Not yet read" />
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/locationRow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -91,15 +105,6 @@
                 tools:text="San Vicente · Meter no. 11111" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvRequestDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textColor="@color/text_primary"
-            android:textSize="13sp"
-            tools:text="Water leaking from the pipe near the meter." />
-
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -109,41 +114,51 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tvRequestDate"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.08"
+                    android:text="PREVIOUS READING"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvPreviousReading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="450 m³" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvPreviousDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp"
-                tools:text="October 08, 2026" />
+                tools:text="Jul 21, 2026" />
 
-            <!-- Shows the current status (colored); tap to change it -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnStatus"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:paddingStart="14dp"
-                android:paddingEnd="8dp"
-                android:textAllCaps="false"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                app:backgroundTint="@color/danger_red_bg"
-                app:cornerRadius="12dp"
-                app:icon="@drawable/ic_arrow_drop_down"
-                app:iconGravity="end"
-                app:iconPadding="2dp"
-                app:iconSize="20dp"
-                app:iconTint="@color/danger_red"
-                android:textColor="@color/danger_red"
-                tools:text="Open" />
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="6dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_chevron_right"
+                app:tint="@color/text_secondary" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

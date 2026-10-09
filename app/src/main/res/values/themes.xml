@@ -1,8 +1,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.AquaBill" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <!-- Base application theme. Always light: every screen is designed on light backgrounds,
+         so following the phone's dark mode made input text and hints unreadable. -->
+    <style name="Base.Theme.AquaBill" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/aqua_navy</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="android:editTextColor">@color/text_primary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
     </style>
 
     <style name="Theme.AquaBill" parent="Base.Theme.AquaBill" />

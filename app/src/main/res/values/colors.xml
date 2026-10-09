@@ -8,7 +8,8 @@
     <color name="aqua_blue">#3497CF</color>
     <color name="aqua_bg">#F2F6F9</color>
     <color name="text_primary">#13293D</color>
-    <color name="text_secondary">#6B7C8C</color>
+    <color name="text_secondary">#4F6172</color>
+    <color name="text_hint">#7D8D9C</color>
     <color name="divider">#E6ECF1</color>
     <color name="success_green">#2E9E6A</color>
     <color name="warning_orange">#E38A1A</color>

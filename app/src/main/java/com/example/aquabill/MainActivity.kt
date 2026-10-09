@@ -43,6 +43,9 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    // Consumer pages that show the bottom nav: the tabs, plus Settings (opened from Home)
+    private val navPages by lazy { tabs.values + R.id.settingsFragment }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -56,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            bottomNav.isVisible = destination.id in tabs.values
+            bottomNav.isVisible = destination.id in navPages
             tabs.forEach { (tabId, destinationId) ->
                 styleTab(findViewById(tabId), selected = destination.id == destinationId)
             }
@@ -68,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
             v.updateLayoutParams<ViewGroup.MarginLayoutParams> { bottomMargin = baseMargin + navBar }
             val keyboardOpen = insets.isVisible(WindowInsetsCompat.Type.ime())
-            v.isVisible = !keyboardOpen && navController.currentDestination?.id in tabs.values
+            v.isVisible = !keyboardOpen && navController.currentDestination?.id in navPages
             insets
         }
     }

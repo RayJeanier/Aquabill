@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Frame the reader lines the meter's numbers up in -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="16dp" />
+    <stroke
+        android:width="3dp"
+        android:color="@color/white" />
+    <solid android:color="#14FFFFFF" />
+</shape>

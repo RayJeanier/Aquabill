@@ -44,6 +44,9 @@ class UserHomeFragment : Fragment(R.layout.fragment_user_home) {
         view.findViewById<View>(R.id.actionRepair).setOnClickListener {
             findNavController().navigate(R.id.action_userHomeFragment_to_maintenanceFragment, userArgs)
         }
+        view.findViewById<View>(R.id.btnSettings).setOnClickListener {
+            findNavController().navigate(R.id.action_userHomeFragment_to_settingsFragment, userArgs)
+        }
 
         val comingSoon = View.OnClickListener {
             Toast.makeText(requireContext(), "Coming soon", Toast.LENGTH_SHORT).show()

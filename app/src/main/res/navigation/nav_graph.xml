@@ -25,8 +25,32 @@
     <fragment
         android:id="@+id/readerHomeFragment"
         android:name="com.example.aquabill.ReaderHomeFragment"
-        android:label="fragment_reader_home"
-        tools:layout="@layout/fragment_reader_home" />
+        android:label="Meter Reader"
+        tools:layout="@layout/fragment_reader_home" >
+
+        <action
+            android:id="@+id/action_readerHomeFragment_to_meterReadingFragment"
+            app:destination="@id/meterReadingFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/meterReadingFragment"
+        android:name="com.example.aquabill.MeterReadingFragment"
+        android:label="Meter Reading"
+        tools:layout="@layout/fragment_meter_reading" >
+
+        <action
+            android:id="@+id/action_meterReadingFragment_to_meterScanFragment"
+            app:destination="@id/meterScanFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/meterScanFragment"
+        android:name="com.example.aquabill.MeterScanFragment"
+        android:label="Scan Meter"
+        tools:layout="@layout/fragment_meter_scan" />
     <fragment
         android:id="@+id/userHomeFragment"
         android:name="com.example.aquabill.UserHomeFragment"
@@ -39,6 +63,9 @@
         <action
             android:id="@+id/action_userHomeFragment_to_maintenanceFragment"
             app:destination="@id/maintenanceFragment" />
+        <action
+            android:id="@+id/action_userHomeFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
 
     </fragment>
 
@@ -59,6 +86,12 @@
         android:name="com.example.aquabill.HistoryFragment"
         android:label="History"
         tools:layout="@layout/fragment_history" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.aquabill.SettingsFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_settings" />
 
     <fragment
         android:id="@+id/maintenanceFragment"
