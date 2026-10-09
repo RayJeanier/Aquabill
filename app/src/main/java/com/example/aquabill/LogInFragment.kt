@@ -12,7 +12,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputEditText
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 class LogInFragment : Fragment(R.layout.fragment_log_in) {
 
@@ -51,19 +54,17 @@ class LogInFragment : Fragment(R.layout.fragment_log_in) {
 
             try {
 
-                // Log in with the account number (user code) or the username. Anything with
-                // characters neither can contain is turned away before it reaches the query.
-                val matchedUser = if (!LOGIN_ID.matches(user_id)) null else supabase
-                    .from("users")
-                    .select {
-                        filter {
-                            or {
-                                eq("user_code", user_id.uppercase())
-                                eq("username", user_id.lowercase()) // usernames are saved in lowercase
-                            }
-                            eq("password", password)
+                // Log in with the account number (user code) or the username. Passwords are
+                // bcrypt hashes, so the app_login() database function checks them (the same
+                // way the website does) and returns the account without the password.
+                val matchedUser = if (!LOGIN_ID.matches(user_id)) null else supabase.postgrest
+                    .rpc(
+                        "app_login",
+                        buildJsonObject {
+                            put("p_login", user_id)
+                            put("p_password", password)
                         }
-                    }
+                    )
                     .decodeList<User>()
                     .firstOrNull()
 
