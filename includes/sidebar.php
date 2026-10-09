@@ -62,3 +62,9 @@ $adminCode = $_SESSION["user"]["user_code"] ?? "Admin";
     </details>
 
 </aside>
+
+<script>
+    // Back/Forward can restore this page from the browser's memory without asking the
+    // server. Reload it in that case, so a logged-out visitor is sent to the login page.
+    window.addEventListener("pageshow", (e) => { if (e.persisted) location.reload(); });
+</script>

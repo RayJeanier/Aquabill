@@ -69,6 +69,7 @@ $requests = $stmt->fetchAll();
 
 /* Status cards: follow the problem filter, so you see e.g. how many leak reports are open */
 $counts = array_fill_keys(REQUEST_STATUSES, 0);
+$totalRequests = 0;
 
 $stmt = $pdo->prepare(
     "SELECT status, COUNT(*) AS total FROM maintenance_requests"
@@ -78,6 +79,9 @@ $stmt = $pdo->prepare(
 $stmt->execute($typeFilter !== "" ? [":type" => $typeFilter] : []);
 
 foreach ($stmt as $row) {
+    // Total counts every request, even one with an unexpected status
+    $totalRequests += (int) $row["total"];
+
     if (isset($counts[$row["status"]])) {
         $counts[$row["status"]] = (int) $row["total"];
     }
@@ -132,6 +136,14 @@ $activeFilters = http_build_query(array_filter(["status" => $filter, "type" => $
                     </div>
                 </div>
             <?php endforeach; ?>
+
+            <div class="stat-card">
+                <span class="stat-icon"><?= icon("wrench") ?></span>
+                <div>
+                    <h5>Total Requests</h5>
+                    <p><?= $totalRequests ?></p>
+                </div>
+            </div>
         </div>
 
         <form class="filters compact" method="GET">

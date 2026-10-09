@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="img/logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>AquaBill Admin Login</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/index.css">
+
 </head>
 
 <body>
@@ -82,13 +84,30 @@
                     required
                 >
 
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    autocomplete="current-password"
-                    required
-                >
+                <div class="password-wrap">
+                    <input
+                        type="password"
+                        name="password"
+                        id="password"
+                        placeholder="Password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                    <!-- show / hide password -->
+                    <button type="button" class="toggle-password" id="togglePassword"
+                            aria-label="Show password" aria-pressed="false" title="Show password">
+                        <svg class="eye-open" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        <svg class="eye-closed" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3 3l18 18"/>
+                            <path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6A17.4 17.4 0 0 0 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/>
+                            <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>
+                        </svg>
+                    </button>
+                </div>
 
                 <button type="submit">
                     Sign In
@@ -105,6 +124,45 @@
     </div>
     <!-- Themed pop-up notifications (logout / login errors) -->
     <div class="toast-area" id="toastArea" aria-live="polite"></div>
+
+    <!-- Loading screen shown while signing in -->
+    <div class="loading-screen" id="loadingScreen" role="status" aria-live="polite" hidden>
+        <div class="loader">
+
+            <!-- big drop that fills with moving water -->
+            <svg class="drop-loader" viewBox="0 0 120 160" aria-hidden="true">
+                <defs>
+                    <clipPath id="dropClip">
+                        <path d="M60 6C52 20 18 62 18 100a42 42 0 0 0 84 0C102 62 68 20 60 6Z"/>
+                    </clipPath>
+                </defs>
+
+                <path class="drop-glass" d="M60 6C52 20 18 62 18 100a42 42 0 0 0 84 0C102 62 68 20 60 6Z"/>
+
+                <g clip-path="url(#dropClip)">
+                    <g class="drop-fill" transform="translate(0 110)">
+                        <path class="drop-wave back"  d="M0 12Q30 0 60 12T120 12T180 12T240 12T300 12T360 12V200H0Z"/>
+                        <path class="drop-wave front" d="M0 16Q30 6 60 16T120 16T180 16T240 16T300 16T360 16V200H0Z"/>
+                    </g>
+                </g>
+
+                <path class="drop-outline" d="M60 6C52 20 18 62 18 100a42 42 0 0 0 84 0C102 62 68 20 60 6Z"/>
+                <path class="drop-shine" d="M38 100c0-14 7-29 14-40"/>
+            </svg>
+
+            <!-- droplets dripping into rippling water -->
+            <div class="splash" aria-hidden="true">
+                <span class="drip"></span>
+                <span class="drip d2"></span>
+                <span class="ring"></span>
+                <span class="ring r2"></span>
+                <span class="ring r3"></span>
+            </div>
+
+            <p class="loading-title">Signing you in<span class="dots" id="loadingDots"></span></p>
+            <p class="loading-sub" id="loadingSub">Checking your account</p>
+        </div>
+    </div>
 
 <script>
     const urlParams = new URLSearchParams(window.location.search);
@@ -157,6 +215,128 @@
     if (error) {
         showToast("error", "Couldn't sign you in", error, 6000);
     }
+
+    // ---------- Loading screen while signing in ----------
+    const loginForm = document.querySelector(".login-card form");
+    const loadingScreen = document.getElementById("loadingScreen");
+    let loadingTimers = [];
+
+    // Water inside the big drop: the level rises and falls while the waves slide sideways
+    const dropFill  = loadingScreen.querySelector(".drop-fill");
+    const waveFront = loadingScreen.querySelector(".drop-wave.front");
+    const waveBack  = loadingScreen.querySelector(".drop-wave.back");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let waterFrame = null;
+
+    function animateWater(start) {
+        const step = (now) => {
+            const t = (now - start) / 1000;                            // seconds since it opened
+            const level = 92 - 52 * Math.sin(t * 1.1);                 // 40 (nearly full) .. 144 (empty)
+            const shift = (t * 75) % 120;                              // one wave = 120 units wide
+
+            dropFill.setAttribute("transform", "translate(0 " + level.toFixed(1) + ")");
+            waveFront.setAttribute("transform", "translate(" + (-shift).toFixed(1) + " 0)");
+            waveBack.setAttribute("transform", "translate(" + (shift - 120).toFixed(1) + " 0)");
+
+            waterFrame = requestAnimationFrame(step);
+        };
+        waterFrame = requestAnimationFrame(step);
+    }
+
+    function showLoading() {
+        loadingScreen.hidden = false;
+        document.body.classList.add("is-loading");
+
+        if (reduceMotion) {
+            dropFill.setAttribute("transform", "translate(0 70)");     // half full, not moving
+        } else {
+            animateWater(performance.now());
+        }
+
+        // "Signing you in", "Signing you in.", ".." , "..."
+        let dots = 0;
+        loadingTimers.push(setInterval(() => {
+            dots = (dots + 1) % 4;
+            document.getElementById("loadingDots").textContent = ".".repeat(dots);
+        }, 450));
+
+        // If it's slow (the free server waking up), say so instead of looking stuck
+        const sub = document.getElementById("loadingSub");
+        loadingTimers.push(setTimeout(() => { sub.textContent = "Still working on it"; }, 4000));
+        loadingTimers.push(setTimeout(() => {
+            sub.textContent = "The server is waking up - this can take up to a minute";
+        }, 9000));
+    }
+
+    loginForm.addEventListener("submit", (e) => {
+        // Already on its way (stops double-clicks)
+        if (loginForm.dataset.submitting) {
+            e.preventDefault();
+            return;
+        }
+
+        e.preventDefault();
+        loginForm.dataset.submitting = "1";
+        loginForm.querySelector("button[type=submit]").disabled = true;
+        showLoading();
+
+        // Short pause so the animation is seen, then send the form for real
+        setTimeout(() => loginForm.submit(), 700);
+    });
+
+
+    // ---------- Back to the login page = logged out ----------
+    // Pressing Back after logging in lands here. Whoever was still logged in is logged
+    // out, so pressing Forward can't show their account again (account pages always
+    // re-check with the server - see includes/no_cache.php).
+    function endSession() {
+        fetch("action/end_session.php", { method: "POST", cache: "no-store", credentials: "same-origin" })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.loggedOut) {
+                    showToast("success", "Logged out", "You went back to the login page, so you've been logged out for your safety.");
+                }
+            })
+            .catch(() => { /* server unreachable - nothing to do */ });
+    }
+
+    // Just logged out with the Log Out button -> already done
+    if (logout !== "success") {
+        endSession();
+    }
+
+    // ---------- Show / hide password ----------
+    const passwordInput  = document.getElementById("password");
+    const togglePassword = document.getElementById("togglePassword");
+
+    function setPasswordVisible(visible) {
+        passwordInput.type = visible ? "text" : "password";
+        togglePassword.setAttribute("aria-pressed", visible);
+        togglePassword.setAttribute("aria-label", visible ? "Hide password" : "Show password");
+        togglePassword.title = visible ? "Hide password" : "Show password";
+    }
+
+    togglePassword.addEventListener("click", () => {
+        setPasswordVisible(passwordInput.type === "password");
+        passwordInput.focus();
+    });
+
+    // Never send the form with the password showing as plain text in the field
+    loginForm.addEventListener("submit", () => setPasswordVisible(false));
+
+    // ---------- Back/Forward = open the login page fresh ----------
+    window.addEventListener("pageshow", (e) => {
+        // Restored from the browser's memory (typed values, loading screen and all):
+        // load it again from scratch instead. The fresh page logs out (above) too.
+        if (e.persisted) {
+            location.reload();
+            return;
+        }
+
+        // Normal load: browsers may still fill back what was typed before - clear it
+        loginForm.reset();
+        setPasswordVisible(false);
+    });
 
     // Remove ?logout / ?error from the address bar so a refresh doesn't show it again
     if (logout || error) {

@@ -3,6 +3,8 @@
 // Include at the top of every admin page and action.
 // Sends anyone who isn't a logged-in admin back to the login page.
 
+require_once __DIR__ . "/no_cache.php";
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

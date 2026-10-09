@@ -112,6 +112,12 @@ $dropIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c-.3 0-
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/user.css">
+
+    <script>
+        // Back/Forward can restore this page from the browser's memory without asking the
+        // server. Reload it in that case, so a logged-out visitor is sent to the login page.
+        window.addEventListener("pageshow", (e) => { if (e.persisted) location.reload(); });
+    </script>
 </head>
 
 <body>
