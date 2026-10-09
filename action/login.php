@@ -2,6 +2,7 @@
 
 session_start();
 require "../database/database.php";
+require "../includes/passwords.php";
 
 // The login box accepts either the user code (SVOB-CONS-...) or the username a
 // consumer chose in Settings. Both are matched ignoring letter case and stray spaces
@@ -34,7 +35,7 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Same message for unknown user and wrong password, so the login form
 // doesn't reveal which user codes exist
-if (!$user || $password !== $user["password"]) {
+if (!$user || !verify_password($password, $user["password"])) {
     login_failed("Invalid User ID / username or password.");
 }
 
@@ -67,6 +68,7 @@ if ($user["role"] !== "admin") {
 }
 
 session_regenerate_id(true);
+unset($user["password"]);   // never keep the password (or its hash) in the session
 $_SESSION["user"] = $user;
 
 header("Location: ../dashboard.php");

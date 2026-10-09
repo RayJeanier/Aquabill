@@ -2,6 +2,7 @@
 
 require "../includes/auth.php";
 require "../database/database.php";
+require "../includes/passwords.php";
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header("Location: ../staff.php");
@@ -9,8 +10,8 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 }
 
 $role            = $_POST["role"] ?? "";
-$password        = $_POST["password"] ?? "";
-$confirmPassword = $_POST["confirm_password"] ?? "";
+$password        = trim($_POST["password"] ?? "");
+$confirmPassword = trim($_POST["confirm_password"] ?? "");
 
 function back_with_error(string $message): never
 {
@@ -22,7 +23,7 @@ if (!in_array($role, ["reader", "plumber", "admin"], true)) {
     back_with_error("Please choose a valid role.");
 }
 
-if (strlen($password) < 6) {
+if (strlen($password) < PASSWORD_MIN_LENGTH) {
     back_with_error("Password must be at least 6 characters.");
 }
 
@@ -41,7 +42,7 @@ try {
 
     $stmt->execute([
         ":role"     => $role,
-        ":password" => $password,
+        ":password" => hash_password($password),
     ]);
 
     $userCode = $stmt->fetchColumn();

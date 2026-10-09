@@ -2,6 +2,7 @@
 
 require "../includes/auth.php";
 require "../../database/database.php";
+require "../../includes/passwords.php";
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header("Location: ../settings.php");
@@ -23,7 +24,7 @@ if ($current === "" || $new === "" || $confirm === "") {
     back_with_error("Please fill in all password fields.");
 }
 
-if (strlen($new) < 6) {
+if (strlen($new) < PASSWORD_MIN_LENGTH) {
     back_with_error("New password must be at least 6 characters.");
 }
 
@@ -43,13 +44,13 @@ try {
     $stmt->execute([":user_code" => $userCode]);
     $stored = $stmt->fetchColumn();
 
-    if ($stored === false || $current !== $stored) {
+    if ($stored === false || !verify_password($current, $stored)) {
         back_with_error("Your current password is incorrect.");
     }
 
     $stmt = $pdo->prepare("UPDATE users SET password = :password WHERE user_code = :user_code AND role = 'consumer'");
     $stmt->execute([
-        ":password"  => $new,
+        ":password"  => hash_password($new),
         ":user_code" => $userCode,
     ]);
 

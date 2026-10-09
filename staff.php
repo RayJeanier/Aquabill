@@ -2,6 +2,7 @@
 require "includes/auth.php";
 require_once "includes/icons.php";
 require "database/database.php";
+require_once "includes/reset_password.php";
 
 // Staff roles the admin can create (must match the user_role enum in the database)
 const STAFF_ROLES = [
@@ -73,6 +74,8 @@ $currentAdmin = $_SESSION["user"]["user_code"] ?? "";
             <div class="alert error"><?= icon("alert") ?> <?= htmlspecialchars($_GET["error"]) ?></div>
         <?php endif; ?>
 
+        <?php reset_password_notice(); ?>
+
         <div class="stats">
             <?php foreach (STAFF_ROLES as $role => $label): ?>
                 <div class="stat-card">
@@ -104,12 +107,13 @@ $currentAdmin = $_SESSION["user"]["user_code"] ?? "";
                         <tr>
                             <th>User Code</th>
                             <th>Role</th>
+                            <th class="cell-actions"><span class="sr-only">Actions</span></th>
                         </tr>
                     </thead>
 
                     <tbody>
                     <?php if (!$staff): ?>
-                        <tr><td colspan="2" class="empty">No staff found.</td></tr>
+                        <tr><td colspan="3" class="empty">No staff found.</td></tr>
                     <?php endif; ?>
 
                     <?php foreach ($staff as $s): ?>
@@ -121,6 +125,15 @@ $currentAdmin = $_SESSION["user"]["user_code"] ?? "";
                                 <?php endif; ?>
                             </td>
                             <td><span class="badge dot <?= htmlspecialchars($s["role"]) ?>"><?= STAFF_ROLES[$s["role"]] ?? htmlspecialchars($s["role"]) ?></span></td>
+                            <td class="cell-actions">
+                                <button type="button" class="icon-btn reset-password"
+                                    aria-label="Reset password for <?= htmlspecialchars($s["user_code"]) ?>"
+                                    data-tooltip="Reset password"
+                                    data-user-code="<?= htmlspecialchars($s["user_code"]) ?>"
+                                    data-name="<?= htmlspecialchars(STAFF_ROLES[$s["role"]] ?? $s["role"]) ?>">
+                                    <?= icon("key") ?>
+                                </button>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>
@@ -168,6 +181,8 @@ $currentAdmin = $_SESSION["user"]["user_code"] ?? "";
     </div>
 
 </div>
+
+<?php reset_password_modal("staff.php"); ?>
 
 </body>
 </html>

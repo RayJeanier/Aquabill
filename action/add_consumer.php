@@ -4,13 +4,14 @@ require '../includes/auth.php';
 include '../database/database.php';
 require '../includes/consumer_defaults.php';
 require '../includes/qr.php';
+require '../includes/passwords.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $name = trim($_POST['name']);
     $address = trim($_POST['address']);
     $meter_no = trim($_POST['meter_no']);
-    $password = DEFAULT_CONSUMER_PASSWORD;
+    $password = hash_password(DEFAULT_CONSUMER_PASSWORD);
 
     try {
 

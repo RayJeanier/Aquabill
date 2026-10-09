@@ -5,6 +5,7 @@
 
 require "../includes/auth.php";
 require "../../database/database.php";
+require "../../includes/passwords.php";
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header("Location: ../settings.php");
@@ -34,7 +35,7 @@ try {
     $stmt->execute([":user_code" => $userCode]);
     $stored = $stmt->fetchColumn();
 
-    if ($stored === false || $password !== $stored) {
+    if ($stored === false || !verify_password($password, $stored)) {
         back_with_error("Your current password is incorrect.");
     }
 

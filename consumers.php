@@ -4,6 +4,7 @@ require "database/database.php";
 require_once "includes/consumer_defaults.php";
 require_once "includes/icons.php";
 require_once "includes/qr.php";
+require_once "includes/reset_password.php";
 
 $sql = "
     SELECT
@@ -80,7 +81,11 @@ $activeCount = count(array_filter($consumers, fn ($c) => $c["status"] === "Activ
             <div class="alert success"><?= icon("check-circle") ?> Consumer updated.</div>
         <?php elseif (isset($_GET["deleted"])): ?>
             <div class="alert success"><?= icon("check-circle") ?> Consumer deleted.</div>
+        <?php elseif (isset($_GET["error"])): ?>
+            <div class="alert error"><?= icon("alert") ?> <?= htmlspecialchars($_GET["error"]) ?></div>
         <?php endif; ?>
+
+        <?php reset_password_notice(); ?>
 
         <!-- TABLE -->
         <div class="table-container">
@@ -165,6 +170,12 @@ $activeCount = count(array_filter($consumers, fn ($c) => $c["status"] === "Activ
                                         <?= icon("printer") ?> Print QR code
                                     </a>
 
+                                    <button type="button" class="dropdown-item reset-password"
+                                        data-user-code="<?= htmlspecialchars($row['user_code']) ?>"
+                                        data-name="<?= htmlspecialchars($row['name']) ?>">
+                                        <?= icon("key") ?> Reset password
+                                    </button>
+
                                     <div class="dropdown-divider"></div>
 
                                     <form method="POST" action="action/delete_consumer.php"
@@ -229,6 +240,9 @@ $activeCount = count(array_filter($consumers, fn ($c) => $c["status"] === "Activ
 
     </div>
 </div>
+
+<!-- RESET PASSWORD MODAL -->
+<?php reset_password_modal("consumers.php"); ?>
 
 <!-- QR CODE MODAL -->
 <div id="qrModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="qrTitle">

@@ -1064,6 +1064,53 @@ tfoot td{
     vertical-align:middle;
 }
 
+/* Reset password: input with a "generate" icon button, and the one-time notice */
+.input-action{
+    display:flex;
+    gap:8px;
+    align-items:center;
+}
+
+.input-action input{
+    flex:1;
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+    letter-spacing:0.04em;
+}
+
+.input-action .icon-btn{
+    width:42px;
+    height:42px;
+    border:1px solid var(--border-strong);
+    background:var(--surface);
+}
+
+.reset-notice{
+    align-items:flex-start;
+    line-height:1.6;
+}
+
+.reset-notice small{
+    color:#047857;
+}
+
+.temp-password{
+    padding:2px 8px;
+    border-radius:6px;
+    background:#fff;
+    color:#065f46;
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:0.04em;
+}
+
+.reset-notice .icon-btn{
+    width:28px;
+    height:28px;
+    vertical-align:middle;
+    color:#065f46;
+}
+
 /* Bill preview inside the meter-reading modal */
 .preview{
     display:grid;
