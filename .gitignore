@@ -1,0 +1,8 @@
+# Local secrets - never commit
+database/config.local.php
+
+# Editor / OS files
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store

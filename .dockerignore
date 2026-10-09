@@ -1,0 +1,7 @@
+.git
+.gitignore
+.idea
+.vscode
+database/config.local.php
+Dockerfile
+.dockerignore
